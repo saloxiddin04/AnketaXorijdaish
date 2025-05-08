@@ -19,12 +19,7 @@ const Main = () => {
 	
 	const questions = Array.from({ length: 22 }, (_, i) => i + 1);
 	
-	const shouldRender = (qNum) => {
-		if (qNum === 8 || qNum === 9) {
-			return educationType === 'Texnikum' || educationType === 'Техникум';
-		}
-		return true;
-	};
+	const showTechFields = formData['question9'] === 'Texnikum' || formData['question9'] === 'Техникум';
 	
 	return (
 		<main className="bg-[rgb(248,249,250)] h-full">
@@ -36,12 +31,13 @@ const Main = () => {
 						const qKey = `question${num}`;
 						const aKey = `answer${num}`;
 						
-						if (!shouldRender(num)) return null;
+						// Texnikumga bog‘liq savollarni shart bilan yashirish
+						if ((num === 10 || num === 11) && !showTechFields) return null;
 						
-						const options = t(aKey, {returnObjects: true});
+						const options = t(aKey, { returnObjects: true });
 						
 						return (
-							<div key={qKey} className="px-4 py-2 bg-white rounded">
+							<div key={qKey}>
 								<label className="block font-medium mb-2">{t(qKey)}</label>
 								
 								{Array.isArray(options) ? (

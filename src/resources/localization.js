@@ -1,86 +1,92 @@
 export const localization = {
 	uz: {
 		translation: {
-			"question1": "1. Familiya, ism va sharifingizni to‘liq yozing:",
-			"question2": "2. Telefon raqamingiz:",
-			"question3": "3. Otangiz yoki onangizning telefon raqami:",
-			"question4": "4. Yoshingiz:",
-			"answer4": ["16 yosh", "17 yosh", "18 yosh", "Boshqa"],
-			"question5": "5. Jinsingiz:",
-			"answer5": ["Erkak", "Ayol"],
-			"question6": "6. Hozir yashayotgan hududingiz (viloyat/tuman/shahar):",
-			"question7": "7. Ayni vaqtda qayerda o‘qiyapsiz?",
-			"answer7": ["Maktab", "Texnikum"],
-			"question8": "8. Texnikumni qaysi yo‘nalishda tamomlayapsiz:",
-			"question9": "9. Sohangiz bo‘yicha sizda qanday imkoniyatlar bor deb o‘ylaysiz?",
-			"answer9": [
+			"question1": "Familiyangiz:",
+			"question2": "Ismingiz:",
+			"question3": "Sharifingiz:",
+			"question4": "Tug‘ilgan kuningiz:",
+			"question5": "Telefon raqamingiz:",
+			"question6": "Qo‘shimcha telefon raqamingiz:",
+			"question7": "Jinsingiz:",
+			"answer7": ["Erkak", "Ayol"],
+			"question8": "Hozir yashayotgan hududingiz (viloyat):",
+			"question9": "Ayni vaqtda qayerni tamomlaysiz?",
+			"answer9": ["Maktab (11 sinf)", "Texnikum"],
+			"question10": "Texnikumni qaysi yo‘nalishda tamomlayapsiz?",
+			"question11": "Sohangiz bo‘yicha sizda qanday imkoniyatlar bor deb o‘ylaysiz?",
+			"answer11": [
 				"Faqat diplomim bor, sohamni yaxshi bilmayman",
 				"O‘z sohamni yaxshi bilaman",
 				"Soham bo‘yicha tajribaga ham egaman",
 				"Soham bo‘yicha qo‘shimcha kursda o‘qiganman",
 				"Soham bo‘yicha qo‘shimcha kursda o‘qishni xohlayman"
 			],
-			"question10": "10. Maktab/texnikumni tamomlagach nima qilmoqchisiz?",
-			"answer10": [
+			"question12": "Maktab/texnikumni tamomlagach nima qilmoqchisiz?",
+			"answer12": [
 				"Universitet/institutga o‘qishga kirmoqchiman",
 				"O‘zbekistonda ishlamoqchiman",
 				"Chet elga ishlashga ketmoqchiman",
-				"Hozircha bilmayman"
+				"Kasb-hunar o‘rganmoqchiman",
+				"Hozircha aniq rejam yo‘q"
 			],
-			"question11": "11. Agar o‘qishni rejalashtirayotgan bo‘lsangiz, qaysi sohaga?",
-			"answer11": [
+			"question13": "Agar o‘qishni rejalashtirayotgan bo‘lsangiz, qaysi sohada o‘qimoqchisiz?",
+			"answer13": [
 				"Tibbiyot",
-				"Texnika/injiniring",
-				"Iqtisodiyot/moliya",
-				"O‘qituvchilik",
+				"Muhandislik",
+				"Moliya/Iqtisod",
+				"Axborot texnologiyalari",
 				"San’at/yoshlar ishi",
 				"Boshqa"
 			],
-			"question12": "12. Qaysi xorijiy tilni bilasiz?",
-			"answer12": [
+			"question14": "Agar kasb-hunar o‘rganmoqchi bo‘lsangiz qaysi kasbni tanlar edingiz?",
+			"question15": "Qaysi xorijiy tilni bilasiz?",
+			"answer15": [
 				"Rus tili",
 				"Ingliz tili",
 				"Turk tili",
 				"Koreys tili",
 				"Nemis tili",
-				"Hech birini bilmayman"
+				"Yapon tili",
+				"Hech birini bilmayman",
+				"Boshqa"
 			],
-			"question13": "13. Qaysi tilni o‘rganmoqchisiz?",
-			"answer13": [
+			"question16": "Qaysi tilni o‘rganmoqchisiz?",
+			"answer16": [
 				"Rus tili",
 				"Ingliz tili",
+				"Turk tili",
 				"Koreys tili",
 				"Nemis tili",
-				"Boshqa",
-				"Hech qaysi"
+				"Yapon tili",
+				"Hech qaysi birini",
+				"Boshqa"
 			],
-			"question14": "14. Chet elda ishlash haqida o‘ylaganmisiz?",
-			"answer14": [
+			"question17": "Chet elda ishlash haqida o‘ylaganmisiz?",
+			"answer17": [
 				"Ha, jiddiy o‘ylayapman",
 				"Ha, lekin ishonchim yo‘q",
-				"Yo‘q, bunday rejam yo‘q",
-				"Bilmayman"
+				"Ha, ishonchli korxona bo‘lsa ishlardim",
+				"Yo‘q, bunday rejam yo‘q"
 			],
-			"question15": "15. Agar ishlashni rejalashtirayotgan bo‘lsangiz, qaysi kasbni tanlar edingiz?",
-			"answer15": [
+			"question18": "Agar ishlashni rejalashtirayotgan bo‘lsangiz, qaysi sohada ishlar edingiz?",
+			"answer18": [
+				"Hamshira",
 				"Quruvchi",
 				"Haydovchi",
 				"Oshpaz",
-				"Sartarosh/go‘zallik ustasi",
 				"Dasturchi/IT",
-				"Sanoat/mexanik ishlar",
+				"Tikuvchi",
+				"Ishlab chiqarish",
 				"Boshqa"
 			],
-			"question16": "16. Siz yangi joylarga o‘rganishga qanday qaraysiz?",
-			"answer16": ["Juda oson", "Vaqt kerak bo‘ladi", "Menga qiyin"],
-			"question17": "17. Ota-onangiz sizning xorijga chiqishingizga qanday munosabatda?",
-			"answer17": [
+			"question19": "Ota-onangiz sizning xorijga chiqishingizga qanday munosabatda?",
+			"answer19": [
 				"To‘liq qo‘llab-quvvatlaydi",
 				"Qarshi emas, lekin xavotirda",
 				"Qarshi"
 			],
-			"question18": "18. Agar chet elda ishlasangiz, quyidagilardan eng ko‘p nimadan qo‘rqasiz?",
-			"answer18": [
+			"question20": "Agar chet elda ishlasangiz, quyidagilardan eng ko‘p nimadan qo‘rqasiz?",
+			"answer20": [
 				"Yolg‘izlik",
 				"Tilni tushunmaslik",
 				"Ota-onadan uzoqlik",
@@ -88,39 +94,36 @@ export const localization = {
 				"Pul yetmasligi",
 				"Hech narsadan qo‘rqmayman"
 			],
-			"question19": "19. Ota-onangiz yoki yaqinlaringiz xorijda ishlayaptimi?",
-			"answer19": [
+			"question21": "Ota-onangiz yoki yaqinlaringiz xorijda ishlayaptimi?",
+			"answer21": [
 				"Ha, biri",
 				"Ha, ikkisi ham",
 				"Yo‘q",
 				"Oldin ishlagan, hozir yo‘q"
 			],
-			"question20": "20. Agar ishlash uchun chet elga borsangiz, qaysi davlatni tanlardingiz?",
-			"answer20": [
+			"question22": "Agar ishlash uchun chet elga borsangiz, qaysi davlatni tanlardingiz?",
+			"answer22": [
+				"Janubiy Koreya",
 				"Rossiya",
-				"Koreya",
 				"Germaniya",
 				"Buyuk Britaniya",
 				"Yaponiya",
 				"Turkiya",
 				"Boshqa"
 			],
-			"question21": "21. Agar siz xorijda yurganingizda muvaffaqiyatsizlikka uchrasangiz, nima qilasiz?",
-			"answer21": [
-				"Orqaga qaytaman",
+			"question23": "Agar siz xorijda yurganingizda muvaffaqiyatsizlikka uchrasangiz, nima qilasiz?",
+			"answer23": [
+				"Ortga qaytaman",
 				"Yordam so‘rayman va davom etaman",
 				"Yangi yo‘llarni izlayman"
 			],
-			"question22": "22. Agar sizga imkoniyat berilsa, 1 yil ichida xorijga chiqib o‘qish yoki ishlashga tayyormisiz?",
-			"answer22": [
+			"question24": "Agar sizga imkoniyat berilsa, 1 yil ichida xorijga chiqib ishlashga tayyormisiz?",
+			"answer24": [
 				"Ha, 100%",
 				"Xorijiy tilni o‘rganishim kerak",
 				"Kasb-hunar o‘rganishim kerak",
 				"Yo‘q, hozircha rejam yo‘q"
-			],
-			"So‘rovnoma": "Hurmatli, Bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va chet elda o‘qish yoki ishlashga tayyorgarligingiz haqida ma’lumot olish uchun mo‘ljallangan. Javoblaringiz asosida sizga mos ta’lim va kasb-hunar loyihalarini yaratish rejalashtirilmoqda.\n" +
-				"So‘rovnoma shaxsiy ma’lumotlar xavfsizligini ta’minlagan holda o‘tkaziladi.\n" +
-				"Iltimos, barcha savollarga to‘liq va samimiy javob bering. Katta Rahmat!"
+			]
 		}
 	},
 	ru: {
