@@ -4,7 +4,7 @@ import logo_footer from "../assets/logo2.png";
 const Footer = () => {
 	return (
 		<footer className="bg-gray-100 py-6">
-			<div className="container mx-auto px-4">
+			<div className="container mx-auto">
 				{/* Main Flex Container */}
 				<div className="flex flex-col md:flex-row justify-between items-center gap-4">
 					{/* Combined Logo and Contact Section */}
@@ -14,7 +14,7 @@ const Footer = () => {
 							<img
 								src={logo_footer}
 								alt="LOGO"
-								className="md:w-2/4 w-32 object-contain"
+								className="w-40 md:w-50 object-contain"
 							/>
 						</div>
 						{/* Contact and Social Media Section */}
