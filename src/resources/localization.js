@@ -8,7 +8,7 @@ export const localization = {
 			"question5": "Telefon raqamingiz:",
 			"question6": "Qo‘shimcha telefon raqamingiz:",
 			"question7": "Jinsingiz:",
-			"answer7": ["Erkak", "Ayol"],
+			"answer7": ["Ayol", "Erkak"],
 			"question8": "Hozir yashayotgan hududingiz (viloyat):",
 			"question9": "Ayni vaqtda qayerni tamomlaysiz?",
 			"answer9": ["Maktab (11 sinf)", "Texnikum"],
@@ -40,27 +40,7 @@ export const localization = {
 			],
 			"question14": "Agar kasb-hunar o‘rganmoqchi bo‘lsangiz qaysi kasbni tanlar edingiz?",
 			"question15": "Qaysi xorijiy tilni bilasiz?",
-			"answer15": [
-				"Rus tili",
-				"Ingliz tili",
-				"Turk tili",
-				"Koreys tili",
-				"Nemis tili",
-				"Yapon tili",
-				"Hech birini bilmayman",
-				"Boshqa"
-			],
 			"question16": "Qaysi tilni o‘rganmoqchisiz?",
-			"answer16": [
-				"Rus tili",
-				"Ingliz tili",
-				"Turk tili",
-				"Koreys tili",
-				"Nemis tili",
-				"Yapon tili",
-				"Hech qaysi birini",
-				"Boshqa"
-			],
 			"question17": "Chet elda ishlash haqida o‘ylaganmisiz?",
 			"answer17": [
 				"Ha, jiddiy o‘ylayapman",

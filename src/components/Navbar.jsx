@@ -22,17 +22,17 @@ const Navbar = () => {
 						<img src={logo} alt="logo" className="w-40 md:w-56" />
 					</div>
 					
-					{/* Til select o‘ngda */}
-					<div className="w-24 flex justify-end">
-						<select
-							onChange={handleLanguageChange}
-							defaultValue={i18n.language}
-							className="border border-gray-300 rounded px-3 py-1 text-sm"
-						>
-							<option value="uz">UZ</option>
-							<option value="ru">RU</option>
-						</select>
-					</div>
+					{/*/!* Til select o‘ngda *!/*/}
+					{/*<div className="w-24 flex justify-end">*/}
+					{/*	<select*/}
+					{/*		onChange={handleLanguageChange}*/}
+					{/*		defaultValue={i18n.language}*/}
+					{/*		className="border border-gray-300 rounded px-3 py-1 text-sm"*/}
+					{/*	>*/}
+					{/*		<option value="uz">UZ</option>*/}
+					{/*		<option value="ru">RU</option>*/}
+					{/*	</select>*/}
+					{/*</div>*/}
 				</div>
 			</nav>
 		</header>
