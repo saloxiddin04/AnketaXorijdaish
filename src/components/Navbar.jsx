@@ -1,5 +1,7 @@
 import React from 'react';
-import logo from '../assets/Logo_Color.svg';
+import logo1 from '../assets/logo1.png'
+import logo2 from '../assets/logo2.png'
+import logo3 from '../assets/logo3.png'
 import { useTranslation } from 'react-i18next';
 
 const Navbar = () => {
@@ -14,12 +16,12 @@ const Navbar = () => {
 		<header className="bg-white fixed shadow-lg w-full p-3 z-50">
 			<nav className="container mx-auto">
 				<div className="flex items-center justify-between">
-					{/* Chap bo‘sh joy (kerak bo‘lsa ikon qo‘yiladi) */}
-					<div className="w-24" />
 					
 					{/* Logo o‘rtada */}
-					<div className="flex-1 flex justify-center">
-						<img src={logo} alt="logo" className="w-40 md:w-56" />
+					<div className="flex-1 flex justify-evenly">
+						<img src={logo1} alt="logo" className="w-40 md:w-56" />
+						<img src={logo2} alt="logo" className="w-40 md:w-56" />
+						<img src={logo3} alt="logo" className="w-40 md:w-56" />
 					</div>
 					
 					{/*/!* Til select o‘ngda *!/*/}

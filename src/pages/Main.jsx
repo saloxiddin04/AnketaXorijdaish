@@ -278,7 +278,15 @@ const Main = () => {
 		<main className="bg-[rgb(248,249,250)] h-full">
 			<div className="container mx-auto pt-20">
 				<form className="max-w-3xl mx-auto p-6 space-y-6">
-					<h1 className="text-2xl font-bold">{t('So‘rovnoma')}</h1>
+					<p className="text-xl px-2 py-4 bg-white border-t-4 border-t-blue-400 rounded">
+						&nbsp;&nbsp;&nbsp;Hurmatli, Bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va chet elda o‘qish yoki ishlashga tayyorgarligingiz haqida ma’lumot olish uchun mo‘ljallangan. Javoblaringiz asosida sizga mos ta’lim va kasb-hunar loyihalarini yaratish rejalashtirilmoqda.
+						<br/>
+						<br/>
+						&nbsp;&nbsp;&nbsp;So‘rovnoma shaxsiy ma’lumotlar xavfsizligini ta’minlagan holda o‘tkaziladi.
+						<br/>
+						<br/>
+						&nbsp;&nbsp;&nbsp;Iltimos, barcha savollarga to‘liq va samimiy javob bering. Katta Rahmat!
+					</p>
 					
 					{questionOrder.map((qKey, index) => {
 						const aKey = qKey?.replace('question', 'answer');
@@ -392,7 +400,7 @@ const Main = () => {
 					
 					<button
 						type="submit"
-						className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+						className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded flex justify-center mx-auto"
 						onClick={handleSubmit}
 					>
 						{t('Yuborish') || 'Yuborish'}
