@@ -138,7 +138,6 @@ const Main = () => {
 		</select>
 	);
 	
-	
 	const data = {
 		"last_name": formData?.question1,
 		"first_name": formData?.question2,
@@ -282,13 +281,13 @@ const Main = () => {
 					<h1 className="text-2xl font-bold">{t('So‘rovnoma')}</h1>
 					
 					{questionOrder.map((qKey, index) => {
-						const aKey = qKey.replace('question', 'answer');
+						const aKey = qKey?.replace('question', 'answer');
 						
 						if ((qKey === 'question10' || qKey === 'question11') && !showTechFields) return null;
 						
 						if (qKey === 'questionCountry') {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t('Davlat')}</label>
 									{renderSelect(qKey, countries, (country) => {
 										setSelectedCountryId(country.id);
@@ -304,7 +303,7 @@ const Main = () => {
 						
 						if (qKey === 'questionRegion' && regions.length > 0) {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t('Viloyat')}</label>
 									{renderSelect(qKey, regions, (region) => {
 										setSelectedRegionId(region.id);
@@ -315,7 +314,7 @@ const Main = () => {
 						
 						if (qKey === 'questionDistrict' && districts.length > 0) {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t('Tuman')}</label>
 									{renderSelect(qKey, districts)}
 								</div>
@@ -324,7 +323,7 @@ const Main = () => {
 						
 						if (qKey === 'question10' && showTechFields) {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t(qKey)}</label>
 									{renderRadioGroup(qKey, options.specialties, (specialtie) => {
 										handleChange('question10', specialtie?.id);
@@ -335,7 +334,7 @@ const Main = () => {
 						
 						if (qKey === 'question14') {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t(qKey)}</label>
 									{renderRadioGroup(qKey, options?.professions, (profession) => {
 										handleChange('question14', profession?.id);
@@ -346,7 +345,7 @@ const Main = () => {
 						
 						if (qKey === 'question15') {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t(qKey)}</label>
 									{renderCheckboxGroup(qKey, options?.languages || [])}
 								</div>
@@ -355,7 +354,7 @@ const Main = () => {
 						
 						if (qKey === 'question16') {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t(qKey)}</label>
 									{renderRadioGroup(qKey, options?.languages, (language) => {
 										handleChange('question16', language?.id);
@@ -366,7 +365,7 @@ const Main = () => {
 						
 						if (qKey === 'question20') {
 							return (
-								<div key={qKey}>
+								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t(qKey)}</label>
 									{renderCheckboxGroup(qKey, options?.fears_abroad || [])}
 								</div>
@@ -376,10 +375,10 @@ const Main = () => {
 						const answers = t(aKey, {returnObjects: true});
 						
 						return (
-							<div key={index}>
+							<div key={index} className="py-4 px-2 bg-white rounded">
 								<label className="block font-semibold mb-2">{t(qKey)}</label>
 								{Array.isArray(answers) ? renderRadioGroup(qKey, answers)
-									: ( answers !== "" &&
+									: (answers !== "" &&
 										<input
 											type={qKey === "question4" ? "date" : "text"}
 											className="w-full p-2 border border-gray-300 rounded"
