@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useTranslation} from 'react-i18next';
+import {toast} from "react-toastify";
 
 export const api_url = "http://api-xorijdaish.asilbro.uz"
 
@@ -263,6 +264,10 @@ const Main = () => {
 		e.preventDefault()
 		try {
 			const response = await axios.post(`${api_url}/questionnaire/graduate-survey`, data)
+			if (response.status === 201) {
+				toast.success("Muvufaqqiyatli yuborildi!")
+				setFormData({})
+			}
 			console.log("response", response)
 			console.log("formData", formData)
 		} catch (e) {
