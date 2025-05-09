@@ -50,6 +50,8 @@ const Main = () => {
 					fears_abroad: specialtiesRes.data?.fears_abroad,
 					languages: languages
 				});
+				
+				setRegions(regionsFilter[0]?.regions || []);
 			} catch (err) {
 				console.error('Data loading failed:', err);
 			}
@@ -275,7 +277,6 @@ const Main = () => {
 		"phone_number": formData?.question5,
 		"add_phone_number": formData?.question6,
 		"gender": formData?.question7, // 1-> erkak, 0 -> ayol
-		"region": formData?.questionRegion,
 		"district": formData?.questionDistrict,
 		"current_study_place": formData?.question9, // 0 -> Maktab (11 sinf), 1-> Texnikum
 		"college_specialty": formData?.question9 === 1 ? formData?.question10 : undefined,
@@ -367,8 +368,8 @@ const Main = () => {
 		'question5',
 		'question6',
 		'question7',
-		'questionCountry',
-		regions?.length > 0 ? 'questionRegion' : "",
+		// 'questionCountry',
+		'questionRegion',
 		districts?.length > 0 ? 'questionDistrict' : "",
 		'question9',
 		'question10',
@@ -478,22 +479,22 @@ const Main = () => {
 						
 						if ((qKey === 'question10' || qKey === 'question11') && !showTechFields) return null;
 						
-						if (qKey === 'questionCountry') {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t('Davlat')}</label>
-									{renderSelect(qKey, options.regions, (country) => {
-										setRegions(country.regions || []);
-										setDistricts([]);
-										setSelectedRegionId(null);
-										handleChange('questionRegion', '');
-										handleChange('questionDistrict', '');
-									})}
-								</div>
-							);
-						}
+						// if (qKey === 'questionCountry') {
+						// 	return (
+						// 		<div key={qKey} className="py-4 px-2 bg-white rounded">
+						// 			<label className="block font-semibold mb-2">{t('Davlat')}</label>
+						// 			{renderSelect(qKey, options.regions, (country) => {
+						// 				setRegions(country.regions || []);
+						// 				setDistricts([]);
+						// 				setSelectedRegionId(null);
+						// 				handleChange('questionRegion', '');
+						// 				handleChange('questionDistrict', '');
+						// 			})}
+						// 		</div>
+						// 	);
+						// }
 						
-						if (qKey === 'questionRegion' && regions.length > 0) {
+						if (qKey === 'questionRegion') {
 							return (
 								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t('Viloyat')}</label>
