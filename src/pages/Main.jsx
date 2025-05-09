@@ -483,7 +483,7 @@ const Main = () => {
 					<span className="text-center flex justify-center mx-auto italic">
 						(maktab va texnikum bitiruvchilari uchun)
 					</span>
-					<p className="text-xl px-2 py-4 bg-white border-t-4 border-t-blue-400 rounded">
+					<p className="text-xl px-2 py-4 bg-white border-t-4 border-t-blue-400 rounded text-justify">
 						&nbsp;&nbsp;&nbsp;Hurmatli, Bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va chet elda o‘qish yoki ishlashga tayyorgarligingiz haqida ma’lumot olish uchun mo‘ljallangan. Javoblaringiz asosida sizga mos ta’lim va kasb-hunar loyihalarini yaratish rejalashtirilmoqda.
 						<br/>
 						<br/>
