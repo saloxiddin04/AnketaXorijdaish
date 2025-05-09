@@ -407,6 +407,24 @@ const Main = () => {
 			'question21', // family_abroad_status
 		];
 		
+		const birthDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+		const phoneRegex = /^998\d{9}$/;
+		
+		if (formData?.question4 && !birthDateRegex.test(formData.question4)) {
+			toast.error("Tug‘ilgan sana YYYY-MM-DD formatida bo‘lishi kerak.");
+			return false;
+		}
+		
+		if (formData?.question5 && !phoneRegex.test(formData.question5)) {
+			toast.error("Telefon raqam 998XXXXXXXXX formatida bo‘lishi kerak.");
+			return false;
+		}
+		
+		if (formData?.question6 && !phoneRegex.test(formData.question6)) {
+			toast.error("Qo‘shimcha raqam 998XXXXXXXXX formatida bo‘lishi kerak.");
+			return false;
+		}
+		
 		for (let field of requiredFields) {
 			if (
 				formData[field] === undefined ||
@@ -574,11 +592,23 @@ const Main = () => {
 								{Array.isArray(answers) ? renderRadioGroup(qKey, answers)
 									: (answers !== "" &&
 										<input
-											type={qKey === "question4" ? "date" : "text"}
+											type={
+												qKey === "question4" ? "date"
+													: (qKey === "question5" || qKey === "question6") ? "tel"
+														: "text"
+											}
+											placeholder={
+												qKey === "question4"
+													? "YYYY-MM-DD"
+													: (qKey === "question5" || qKey === "question6")
+														? "998xxxxxxxxx"
+														: ""
+											}
 											className="w-full p-2 border border-gray-300 rounded"
 											value={formData[qKey] || ''}
 											onChange={(e) => handleChange(qKey, e.target.value)}
 										/>
+									
 									)}
 							</div>
 						);
