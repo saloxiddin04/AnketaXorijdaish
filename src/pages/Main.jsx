@@ -276,6 +276,7 @@ const Main = () => {
 		"birth_date": formData?.question4,
 		"phone_number": formData?.question5,
 		"add_phone_number": formData?.question6,
+		"region": formData?.questionRegion,
 		"gender": formData?.question7, // 1-> erkak, 0 -> ayol
 		"district": formData?.questionDistrict,
 		"current_study_place": formData?.question9, // 0 -> Maktab (11 sinf), 1-> Texnikum
