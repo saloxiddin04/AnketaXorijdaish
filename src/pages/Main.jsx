@@ -9,11 +9,9 @@ const Main = () => {
 	const {t} = useTranslation();
 	
 	const [formData, setFormData] = useState({});
-	const [countries, setCountries] = useState([]);
 	const [regions, setRegions] = useState([]);
 	const [districts, setDistricts] = useState([]);
 	
-	const [selectedCountryId, setSelectedCountryId] = useState(null);
 	const [selectedRegionId, setSelectedRegionId] = useState(null);
 	
 	const [options, setOptions] = useState({
@@ -37,14 +35,21 @@ const Main = () => {
 					axios.get(`${api_url}/user/get-countries-regions`),
 					axios.get(`${api_url}/questionnaire/graduate-survey`),
 				]);
+				
+				const languages = [
+					...(specialtiesRes.data?.languages || []),
+					{ id: 'other', name: 'Boshqa' }, // yoki "Другое" agar rus tilida kerak bo‘lsa
+				];
+				
+				const regionsFilter = regionsRes.data?.filter((el) => el?.code === "UZ")
+				
 				setOptions({
-					regions: regionsRes.data,
+					regions: regionsFilter,
 					specialties: specialtiesRes.data?.college_specialty,
 					professions: specialtiesRes.data?.profession,
 					fears_abroad: specialtiesRes.data?.fears_abroad,
-					languages: specialtiesRes.data?.languages
+					languages: languages
 				});
-				setCountries(regionsRes.data);
 			} catch (err) {
 				console.error('Data loading failed:', err);
 			}
@@ -65,55 +70,179 @@ const Main = () => {
 		fetchDistricts();
 	}, [selectedRegionId]);
 	
-	const renderRadioGroup = (key, items, onSelect) => (
-		<div className="space-y-2">
-			{items.map((item, idx) => {
-				const text = typeof item === 'string' ? item : item?.name;
-				
-				return (
-					<label key={idx} className="flex items-center gap-2">
-						<input
-							type="radio"
-							name={key}
-							value={typeof item === "object" ? item?.id : idx}
-							checked={formData[key] === (typeof item === "object" ? item?.id : idx)}
-							onChange={() => {
-								handleChange(key, idx);
-								if (onSelect) onSelect(item);
-							}}
-						/>
-						<span>{text}</span>
-					</label>
-				);
-			})}
-		</div>
-	);
-	
-	const renderCheckboxGroup = (key, items) => {
+	const renderRadioGroup = (key, items, onSelect) => {
+		const selectedValue = formData[key];
+		
+		const selectedItemText = items
+			.map((item, idx) => ({
+				text: typeof item === 'string' ? item : item?.name,
+				value: typeof item === "object" ? item?.id : idx,
+			}))
+			.find((item) => item.value === selectedValue)?.text?.toLowerCase();
+		
+		const isOtherSelected =
+			selectedItemText === "boshqa" || selectedItemText === "другое";
+		
 		return (
 			<div className="space-y-2">
-				{items.map((item) => (
-					<label key={item.id} className="flex items-center gap-2">
-						<input
-							type="radio"
-							value={item.id || ""}
-							checked={formData[key]?.includes(item.id) || ""}
-							onChange={(e) => {
-								const checked = e.target.checked;
-								setFormData((prev) => {
-									const current = prev[key] || [];
-									return {
-										...prev,
-										[key]: checked
-											? [...current, item.id]
-											: current.filter((id) => id !== item.id)
-									};
-								});
-							}}
-						/>
-						<span>{item.name}</span>
-					</label>
-				))}
+				{items.map((item, idx) => {
+					const text = typeof item === 'string' ? item : item?.name;
+					const value = typeof item === "object" ? item?.id : idx;
+					const itemText = text?.toLowerCase();
+					
+					return (
+						<label key={idx} className="flex items-center gap-2">
+							<input
+								type="radio"
+								name={key}
+								value={value}
+								checked={formData[key] === value}
+								onChange={() => {
+									handleChange(key, value);
+									
+									// Agar boshqa variant tanlansa, customni o'chiramiz
+									if (
+										key === "question13" &&
+										itemText !== "boshqa" &&
+										itemText !== "другое"
+									) {
+										setFormData((prev) => ({
+											...prev,
+											custom_intended_field_of_study: undefined,
+										}));
+									}
+									
+									if (
+										key === "question18" &&
+										itemText !== "boshqa" &&
+										itemText !== "другое"
+									) {
+										setFormData((prev) => ({
+											...prev,
+											custom_planned_job: undefined,
+										}));
+									}
+									
+									if (
+										key === "question22" &&
+										itemText !== "boshqa" &&
+										itemText !== "другое"
+									) {
+										setFormData((prev) => ({
+											...prev,
+											custom_preferred_country: undefined,
+										}));
+									}
+									
+									if (onSelect) onSelect(item);
+								}}
+							/>
+							<span>{text}</span>
+						</label>
+					);
+				})}
+				
+				{/* Faqat "Boshqa" tanlansa input ko‘rinadi */}
+				{isOtherSelected && (
+					<input
+						type="text"
+						className="mt-2 w-full border border-gray-300 p-2 rounded"
+						placeholder="Iltimos, aniqlashtiring"
+						// Dinamik value, key ga qarab qiymatni olish
+						value={
+							key === "question13"
+								? formData.custom_intended_field_of_study
+								: key === "question18"
+									? formData.custom_planned_job
+									: key === "question16"
+									? formData.custom_desired_language
+									: key === "question22"
+											? formData.custom_preferred_country
+											: ""
+						}
+						onChange={(e) => {
+							// Dinamik `setFormData` bilan formData'ni yangilash
+							setFormData((prev) => ({
+								...prev,
+								// `key` ga qarab mos bo'lgan custom fieldni yangilash
+								[key === "question13" ? "custom_intended_field_of_study" : key === "question18" ? "custom_planned_job" : key === "question16" ? "custom_desired_language" : key === "question22" ? "custom_preferred_country" : ""]: e.target.value,
+							}));
+						}}
+					/>
+				)}
+			
+			</div>
+		);
+	};
+	
+	const renderCheckboxGroup = (key, items) => {
+		const selectedItems = formData[key] || [];
+		
+		const isOtherSelected = selectedItems.includes('other');
+		
+		const handleCheckboxChange = (e, itemId) => {
+			const checked = e.target.checked;
+			setFormData((prev) => {
+				const current = prev[key] || [];
+				
+				if (itemId === "other") {
+					// "other" ni tanlasak, boshqa variantlarni olib tashlaymiz
+					return {
+						...prev,
+						[key]: checked ? [itemId] : [], // Faqat "other" bo'lsin
+						custom_known_languages: "", // custom inputni bo'shatamiz
+					};
+				} else {
+					// "other" tanlanmasa, tanlanganlarni qo'shish yoki olib tashlash
+					const updatedSelection = checked
+						? [...current.filter((id) => id !== "other"), itemId] // "other"ni olib tashlaymiz
+						: current.filter((id) => id !== itemId);
+					
+					return {
+						...prev,
+						[key]: updatedSelection,
+					};
+				}
+			});
+		};
+		
+		return (
+			<div className="space-y-2">
+				{items.map((item, idx) => {
+					const text = typeof item === 'string' ? item : item?.name;
+					const value = item.id || "";
+					
+					// Agar "other" tanlangan bo'lsa, boshqa variantlar checked bo'lmasligi kerak
+					const isChecked = isOtherSelected && value !== "other" ? false : selectedItems.includes(value);
+					
+					return (
+						<label key={idx} className="flex items-center gap-2">
+							<input
+								type="checkbox"
+								value={value}
+								checked={isChecked} // "other" tanlanganida boshqa variantlar checked bo'lmasin
+								onChange={(e) => handleCheckboxChange(e, value)}
+							/>
+							<span>{text}</span>
+						</label>
+					);
+				})}
+				
+				{/* "other" tanlanganida input ko'rsatiladi */}
+				{isOtherSelected && (
+					<input
+						type="text"
+						className="mt-2 w-full border border-gray-300 p-2 rounded"
+						placeholder="Iltimos, tilni kiriting"
+						value={formData.custom_known_languages || ''}
+						onChange={(e) =>
+							setFormData((prev) => ({
+								...prev,
+								custom_known_languages: e.target.value,
+							}))
+						}
+					/>
+				)}
 			</div>
 		);
 	};
@@ -129,7 +258,7 @@ const Main = () => {
 				handleChange(name, e.target.value);
 			}}
 		>
-			<option value="">{t('Tanlang')}</option>
+			<option value="" disabled={formData[name]}>{t('Tanlang')}</option>
 			{options.map((opt) => (
 				<option key={opt.id} value={opt.id}>
 					{opt.name}
@@ -170,15 +299,15 @@ const Main = () => {
 		// TEACHING = 3, _("O‘qituvchilik")
 		// ART = 4, _("San’at/yoshlar ishi")
 		// null =  _("Boshqa")
-		"intended_field_of_study": formData?.question13,
-		// "custom_intended_field_of_study": "aktyo'r",
+		"intended_field_of_study": formData?.question13 === 5 ? undefined : formData?.question13,
+		"custom_intended_field_of_study": formData?.custom_intended_field_of_study,
 		
 		"optional_profession": formData?.question14,
-		"known_languages": formData?.question15,
-		// "custom_known_languages": "o'ris tili" // agar known_languages=null bo'sa
+		"known_languages": formData?.question15 == "other" ? undefined : formData?.question15,
+		"custom_known_languages": formData?.custom_known_languages, // agar known_languages=null bo'sa
 		
-		"desired_languages": [formData?.question16],
-		// "custom_desired_language": "Mo'g'il tili",
+		"desired_languages": formData?.question16 === "other" ? undefined : [formData?.question16],
+		"custom_desired_language": formData?.custom_desired_language,
 		
 		// SERIOUS = 0, _("Ha, jiddiy o‘ylayapman")
 		// DOUBTFUL = 1, _("Ha, lekin ishonchim yo‘q")
@@ -193,8 +322,8 @@ const Main = () => {
 		// DEVELOPER_IT = 4, _("Dasturchi/IT")
 		// TAILOR = 5, _("Tikuvchi")
 		// INDUSTRIAL = 6, _("Ishlab chiqarish")
-		"planned_job": formData?.question18,
-		// "custom_planned_job": "bekorchi", // agar planned_job=null bo'lsa
+		"planned_job": formData?.question18 === 7 ? undefined : formData?.question18,
+		"custom_planned_job": formData?.question18 === 7 ? formData?.custom_planned_job : undefined, // agar planned_job=null bo'lsa
 		
 		// SUPPORT = 0, _("To‘liq qo‘llab-quvvatlaydi")
 		// NEUTRAL = 1, _("Qarshi emas, lekin xavotirda")
@@ -215,8 +344,8 @@ const Main = () => {
 		// UK = 3, _("Buyuk Britaniya")
 		// JAPAN = 4, _("Yaponiya")
 		// TURKEY = 5, _("Turkiya")
-		"preferred_country": formData?.question22,
-		// "custom_preferred_country": "Amazonka", // agar preferred_country=null bo'lsa
+		"preferred_country": formData?.question22 === 6 ? undefined : formData?.question22,
+		"custom_preferred_country": formData?.question22 === 6 ? formData?.custom_preferred_country : undefined, // agar preferred_country=null bo'lsa
 		
 		// RETURN = 0, _("Orqaga qaytaman")
 		// ASK_HELP = 1, _("Yordam so‘rayman va davom etaman")
@@ -259,8 +388,58 @@ const Main = () => {
 		'question24'
 	];
 	
+	const validateForm = () => {
+		const requiredFields = [
+			'question1', // last_name
+			'question2', // first_name
+			'question3', // mid_name
+			'question4', // birth_date
+			'question5', // phone_number
+			'question7', // gender
+			'questionRegion',
+			'questionDistrict',
+			'question9', // current_study_place
+			'question12', // future_plan_after_graduation
+			'question17', // abroad_work_interest
+			'question19', // parent_support_abroad
+			'question21', // family_abroad_status
+		];
+		
+		for (let field of requiredFields) {
+			if (
+				formData[field] === undefined ||
+				formData[field] === null ||
+				formData[field] === ''
+			) {
+				toast.error(`Iltimos, barcha maydonini to‘ldiring.`);
+				return false;
+			}
+		}
+		
+		// Custom fieldlar uchun alohida tekshiruv
+		if (formData?.question13 === 'other' && !formData.custom_intended_field_of_study) {
+			toast.error('Iltimos, rejalashtirilgan sohani aniqlashtiring.');
+			return false;
+		}
+		if (formData?.question18 === 7 && !formData.custom_planned_job) {
+			toast.error('Iltimos, rejalashtirilgan ishni aniqlashtiring.');
+			return false;
+		}
+		if (formData?.question15 === 'other' && !formData.custom_known_languages) {
+			toast.error('Iltimos, tilni aniqlashtiring.');
+			return false;
+		}
+		if (formData?.question22 === 6 && !formData.custom_preferred_country) {
+			toast.error('Iltimos, davlatni aniqlashtiring.');
+			return false;
+		}
+		
+		return true;
+	};
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault()
+		if (!validateForm()) return;
 		try {
 			const response = await axios.post(`${api_url}/questionnaire/graduate-survey`, data)
 			if (response.status === 201) {
@@ -278,6 +457,12 @@ const Main = () => {
 		<main className="bg-[rgb(248,249,250)] h-full">
 			<div className="container mx-auto pt-20">
 				<form className="max-w-3xl mx-auto p-6 space-y-6">
+					<h1 className="text-center text-2xl">
+						Yoshlarning kasbiy rejalari va chet elda ishlashga tayyorligi bo‘yicha SO‘ROVNOMA
+					</h1>
+					<span className="text-center flex justify-center mx-auto italic">
+						(maktab va texnikum bitiruvchilari uchun)
+					</span>
 					<p className="text-xl px-2 py-4 bg-white border-t-4 border-t-blue-400 rounded">
 						&nbsp;&nbsp;&nbsp;Hurmatli, Bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va chet elda o‘qish yoki ishlashga tayyorgarligingiz haqida ma’lumot olish uchun mo‘ljallangan. Javoblaringiz asosida sizga mos ta’lim va kasb-hunar loyihalarini yaratish rejalashtirilmoqda.
 						<br/>
@@ -297,8 +482,7 @@ const Main = () => {
 							return (
 								<div key={qKey} className="py-4 px-2 bg-white rounded">
 									<label className="block font-semibold mb-2">{t('Davlat')}</label>
-									{renderSelect(qKey, countries, (country) => {
-										setSelectedCountryId(country.id);
+									{renderSelect(qKey, options.regions, (country) => {
 										setRegions(country.regions || []);
 										setDistricts([]);
 										setSelectedRegionId(null);

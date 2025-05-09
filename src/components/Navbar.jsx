@@ -19,9 +19,9 @@ const Navbar = () => {
 					
 					{/* Logo o‘rtada */}
 					<div className="flex-1 flex justify-between">
-						<img src={logo1} alt="logo" className="w-36 md:w-56" />
-						<img src={logo2} alt="logo" className="w-36 md:w-56" />
-						<img src={logo3} alt="logo" className="w-36 md:w-56" />
+						<img src={logo1} alt="logo" className="w-24 md:w-56" />
+						<img src={logo2} alt="logo" className="w-24 md:w-56" />
+						<img src={logo3} alt="logo" className="w-24 md:w-56" />
 					</div>
 					
 					{/*/!* Til select o‘ngda *!/*/}
