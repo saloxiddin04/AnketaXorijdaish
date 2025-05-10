@@ -132,8 +132,8 @@ const Main = () => {
 		gender: formData.gender,
 		
 		current_study_place: formData.current_study_place,
-		college_specialty:
-			formData.current_study_place === 1 ? formData.college_specialty : undefined,
+		college_specialty: (formData.current_study_place === 1 && formData.college_specialty !== 5) ? formData.college_specialty : undefined,
+		custom_college_specialty: formData.college_specialty === 5 ? formData.custom_college_specialty : undefined,
 		professional_readiness:
 			formData.current_study_place === 1 ? formData.professional_readiness : undefined,
 		
@@ -144,9 +144,8 @@ const Main = () => {
 		custom_intended_field_of_study:
 			formData.intended_field_of_study === 5 ? formData.custom_intended_field_of_study : undefined,
 		
-		optional_profession: formData.optional_profession,
-		custom_optional_profession:
-			formData.optional_profession === 5 ? formData.custom_optional_profession : undefined,
+		optional_profession: formData.optional_profession === 5 ? undefined : formData.optional_profession,
+		custom_optional_profession: formData.optional_profession === 5 ? formData.custom_optional_profession : undefined,
 		
 		known_languages: Array.isArray(formData.known_languages) &&
 		formData.known_languages.includes('Boshqa') ? undefined : formData.known_languages,
@@ -223,6 +222,10 @@ const Main = () => {
 		}
 		
 		if (formData.optional_profession === 5 && !formData.custom_optional_profession) {
+			toast.error("Iltimos, kasbni aniqlashtiring.");
+			return false;
+		}
+		if (formData.college_specialty === 5 && !formData.custom_college_specialty) {
 			toast.error("Iltimos, kasbni aniqlashtiring.");
 			return false;
 		}
@@ -469,6 +472,30 @@ const Main = () => {
 										</label>
 									</div>
 								))}
+								<div className="space-y-2">
+									<label className="flex items-center gap-2">
+										<input
+											type="radio"
+											name={"college_specialty"}
+											value={"5"}
+											checked={formData["college_specialty"] === 5}
+											onChange={() => handleChange("college_specialty", 5)}
+										/>
+										<span>Boshqa</span>
+									</label>
+								</div>
+								{formData["college_specialty"] === 5 && (
+									<div className="space-y-2">
+										<input
+											required
+											type="text"
+											placeholder="Sohani kiriting"
+											className="w-full p-2 border border-gray-300 rounded"
+											value={formData['custom_college_specialty'] || ''}
+											onChange={(e) => handleChange("custom_college_specialty", e.target.value)}
+										/>
+									</div>
+								)}
 							</div>
 							<div className="py-4 px-2 bg-white rounded">
 								<label className="block font-semibold mb-2">11. Sohangiz bo‘yicha sizda qanday imkoniyatlar bor deb
