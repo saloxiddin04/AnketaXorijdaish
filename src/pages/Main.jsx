@@ -26,8 +26,6 @@ const Main = () => {
 		setFormData((prev) => ({...prev, [key]: value}));
 	};
 	
-	const showTechFields = formData['question9'] === 1 || formData['question9'] === 'Техникум';
-	
 	useEffect(() => {
 		const fetchInitialData = async () => {
 			try {
@@ -36,11 +34,6 @@ const Main = () => {
 					axios.get(`${api_url}/questionnaire/graduate-survey`),
 				]);
 				
-				const languages = [
-					...(specialtiesRes.data?.languages || []),
-					{ id: 'other', name: 'Boshqa' }, // yoki "Другое" agar rus tilida kerak bo‘lsa
-				];
-				
 				const regionsFilter = regionsRes.data?.filter((el) => el?.code === "UZ")
 				
 				setOptions({
@@ -48,7 +41,7 @@ const Main = () => {
 					specialties: specialtiesRes.data?.college_specialty,
 					professions: specialtiesRes.data?.profession,
 					fears_abroad: specialtiesRes.data?.fears_abroad,
-					languages: languages
+					languages: specialtiesRes.data?.languages
 				});
 				
 				setRegions(regionsFilter[0]?.regions || []);
@@ -72,358 +65,127 @@ const Main = () => {
 		fetchDistricts();
 	}, [selectedRegionId]);
 	
-	const renderRadioGroup = (key, items, onSelect) => {
-		const selectedValue = formData[key];
-		
-		const selectedItemText = items
-			.map((item, idx) => ({
-				text: typeof item === 'string' ? item : item?.name,
-				value: typeof item === "object" ? item?.id : idx,
-			}))
-			.find((item) => item.value === selectedValue)?.text?.toLowerCase();
-		
-		const isOtherSelected =
-			selectedItemText === "boshqa" || selectedItemText === "другое";
+	const handleCheckboxChange = (key, value) => {
+		setFormData((prev) => {
+			const current = prev[key] || [];
+			
+			let updated = [];
+			
+			if (value === 'other' || value === 'Boshqa') {
+				// "Boshqa" tanlansa — boshqa hammasini olib tashlab faqat Boshqa qoldiramiz
+				updated = ['Boshqa'];
+			} else {
+				// Agar boshqa tanlov bo‘lsa — "Boshqa"ni olib tashlaymiz
+				updated = current.includes(value)
+					? current.filter((item) => item !== value)
+					: [...current.filter((item) => item !== 'Boshqa'), value];
+			}
+			
+			return {
+				...prev,
+				[key]: updated,
+				[`custom_${key}`]: updated.includes('Boshqa') ? prev[`custom_${key}`] || '' : undefined,
+			};
+		});
+	};
+	
+	const renderMultipleCheckboxGroup = (key, items, text) => {
+		const selectedItems = formData[key] || [];
+		const isOtherSelected = selectedItems.includes('Boshqa');
 		
 		return (
 			<div className="space-y-2">
-				{items.map((item, idx) => {
-					const text = typeof item === 'string' ? item : item?.name;
-					const value = typeof item === "object" ? item?.id : idx;
-					const itemText = text?.toLowerCase();
-					
-					return (
-						<label key={idx} className="flex items-center gap-2">
-							<input
-								type="radio"
-								name={key}
-								value={value}
-								checked={formData[key] === value}
-								onChange={() => {
-									handleChange(key, value);
-									
-									// Agar boshqa variant tanlansa, customni o'chiramiz
-									if (
-										key === "question13" &&
-										itemText !== "boshqa" &&
-										itemText !== "другое"
-									) {
-										setFormData((prev) => ({
-											...prev,
-											custom_intended_field_of_study: undefined,
-										}));
-									}
-									
-									if (
-										key === "question18" &&
-										itemText !== "boshqa" &&
-										itemText !== "другое"
-									) {
-										setFormData((prev) => ({
-											...prev,
-											custom_planned_job: undefined,
-										}));
-									}
-									
-									if (
-										key === "question22" &&
-										itemText !== "boshqa" &&
-										itemText !== "другое"
-									) {
-										setFormData((prev) => ({
-											...prev,
-											custom_preferred_country: undefined,
-										}));
-									}
-									
-									if (onSelect) onSelect(item);
-								}}
-							/>
-							<span>{text}</span>
-						</label>
-					);
-				})}
-				
-				{/* Faqat "Boshqa" tanlansa input ko‘rinadi */}
+				<label className="block font-semibold mb-2">{text}</label>
+				{items.map((item, idx) => (
+					<label key={idx} className="flex items-center gap-2">
+						<input
+							type="checkbox"
+							value={item?.id}
+							checked={selectedItems.includes(item?.id)}
+							onChange={() => handleCheckboxChange(key, item?.id)}
+						/>
+						{item?.name}
+					</label>
+				))}
 				{isOtherSelected && (
 					<input
 						type="text"
 						className="mt-2 w-full border border-gray-300 p-2 rounded"
 						placeholder="Iltimos, aniqlashtiring"
-						// Dinamik value, key ga qarab qiymatni olish
-						value={
-							key === "question13"
-								? formData.custom_intended_field_of_study
-								: key === "question18"
-									? formData.custom_planned_job
-									: key === "question16"
-									? formData.custom_desired_language
-									: key === "question22"
-											? formData.custom_preferred_country
-											: ""
-						}
-						onChange={(e) => {
-							// Dinamik `setFormData` bilan formData'ni yangilash
-							setFormData((prev) => ({
-								...prev,
-								// `key` ga qarab mos bo'lgan custom fieldni yangilash
-								[key === "question13" ? "custom_intended_field_of_study" : key === "question18" ? "custom_planned_job" : key === "question16" ? "custom_desired_language" : key === "question22" ? "custom_preferred_country" : ""]: e.target.value,
-							}));
-						}}
-					/>
-				)}
-			
-			</div>
-		);
-	};
-	
-	const renderCheckboxGroup = (key, items) => {
-		const selectedItems = formData[key] || [];
-		
-		const isOtherSelected = selectedItems.includes('other');
-		
-		const handleCheckboxChange = (e, itemId) => {
-			const checked = e.target.checked;
-			setFormData((prev) => {
-				const current = prev[key] || [];
-				
-				if (itemId === "other") {
-					// "other" ni tanlasak, boshqa variantlarni olib tashlaymiz
-					return {
-						...prev,
-						[key]: checked ? [itemId] : [], // Faqat "other" bo'lsin
-						custom_known_languages: "", // custom inputni bo'shatamiz
-					};
-				} else {
-					// "other" tanlanmasa, tanlanganlarni qo'shish yoki olib tashlash
-					const updatedSelection = checked
-						? [...current.filter((id) => id !== "other"), itemId] // "other"ni olib tashlaymiz
-						: current.filter((id) => id !== itemId);
-					
-					return {
-						...prev,
-						[key]: updatedSelection,
-					};
-				}
-			});
-		};
-		
-		return (
-			<div className="space-y-2">
-				{items.map((item, idx) => {
-					const text = typeof item === 'string' ? item : item?.name;
-					const value = item.id || "";
-					
-					// Agar "other" tanlangan bo'lsa, boshqa variantlar checked bo'lmasligi kerak
-					const isChecked = isOtherSelected && value !== "other" ? false : selectedItems.includes(value);
-					
-					return (
-						<label key={idx} className="flex items-center gap-2">
-							<input
-								type="checkbox"
-								value={value}
-								checked={isChecked} // "other" tanlanganida boshqa variantlar checked bo'lmasin
-								onChange={(e) => handleCheckboxChange(e, value)}
-							/>
-							<span>{text}</span>
-						</label>
-					);
-				})}
-				
-				{/* "other" tanlanganida input ko'rsatiladi */}
-				{isOtherSelected && (
-					<input
-						type="text"
-						className="mt-2 w-full border border-gray-300 p-2 rounded"
-						placeholder="Iltimos, tilni kiriting"
-						value={formData.custom_known_languages || ''}
-						onChange={(e) =>
-							setFormData((prev) => ({
-								...prev,
-								custom_known_languages: e.target.value,
-							}))
-						}
+						value={formData[`custom_${key}`] || ''}
+						onChange={(e) => handleChange(`custom_${key}`, e.target.value)}
 					/>
 				)}
 			</div>
 		);
 	};
-	
-	const renderSelect = (name, options, onChange) => (
-		<select
-			name={name}
-			className="border border-gray-300 rounded px-3 py-2 w-full"
-			value={formData[name] || ''}
-			onChange={(e) => {
-				const selectedOption = options.find(opt => opt.id === e.target.value);
-				if (onChange) onChange(selectedOption);
-				handleChange(name, e.target.value);
-			}}
-		>
-			<option value="" disabled={formData[name]}>{t('Tanlang')}</option>
-			{options.map((opt) => (
-				<option key={opt.id} value={opt.id}>
-					{opt.name}
-				</option>
-			))}
-		</select>
-	);
 	
 	const data = {
-		"last_name": formData?.question1,
-		"first_name": formData?.question2,
-		"mid_name": formData?.question3,
-		"birth_date": formData?.question4,
-		"phone_number": formData?.question5,
-		"add_phone_number": formData?.question6,
-		"region": formData?.questionRegion,
-		"gender": formData?.question7, // 1-> erkak, 0 -> ayol
-		"district": formData?.questionDistrict,
-		"current_study_place": formData?.question9, // 0 -> Maktab (11 sinf), 1-> Texnikum
-		"college_specialty": formData?.question9 === 1 ? formData?.question10 : undefined,
+		last_name: formData.last_name,
+		first_name: formData.first_name,
+		mid_name: formData.mid_name,
+		birth_date: formData.birth_date,
+		phone_number: formData.phone_number,
+		add_phone_number: formData.add_phone_number,
+		region: formData.region,
+		district: formData.district,
+		gender: formData.gender,
 		
-		// ONLY_DIPLOMA = 0, _("Faqat diplomim bor, sohamni yaxshi bilmayman")
-		// KNOW_FIELD = 1, _("O‘z sohamni yaxshi bilaman")
-		// HAVE_EXPERIENCE = 2, _("Soham bo‘yicha tajribaga ham egaman")
-		// TOOK_COURSE = 3, _("Soham bo‘yicha qo‘shimcha kursda o‘qiganman")
-		// WANT_COURSE = 4, _("Soham bo‘yicha qo‘shimcha kursda o‘qishni xohlayman")
-		"professional_readiness": formData?.question9 === 1 ? formData?.question11 : undefined,
+		current_study_place: formData.current_study_place,
+		college_specialty:
+			formData.current_study_place === 1 ? formData.college_specialty : undefined,
+		professional_readiness:
+			formData.current_study_place === 1 ? formData.professional_readiness : undefined,
 		
-		// UNIVERSITY = 0, _("Universitetga o‘qishga kirmoqchiman")
-		// WORK_UZB = 1, _("O‘zbekistonda ishlamoqchiman")
-		// WORK_ABROAD = 2, _("Chet elga ishlashga ketmoqchiman")
-		// UNKNOWN = 3, _("Hozircha bilmayman")
-		"future_plan_after_graduation": formData?.question12,
+		future_plan_after_graduation: formData.future_plan_after_graduation,
 		
-		// MEDICINE = 0, _("Tibbiyot")
-		// ENGINEERING = 1, _("Texnika/injiniring")
-		// ECONOMY = 2, _("Iqtisodiyot/moliya")
-		// TEACHING = 3, _("O‘qituvchilik")
-		// ART = 4, _("San’at/yoshlar ishi")
-		// null =  _("Boshqa")
-		"intended_field_of_study": formData?.question13 === 5 ? undefined : formData?.question13,
-		"custom_intended_field_of_study": formData?.custom_intended_field_of_study,
+		intended_field_of_study:
+			formData.intended_field_of_study === 5 ? undefined : formData.intended_field_of_study,
+		custom_intended_field_of_study:
+			formData.intended_field_of_study === 5 ? formData.custom_intended_field_of_study : undefined,
 		
-		"optional_profession": formData?.question14,
-		"known_languages": formData?.question15 == "other" ? undefined : formData?.question15,
-		"custom_known_languages": formData?.custom_known_languages, // agar known_languages=null bo'sa
+		optional_profession: formData.optional_profession,
+		custom_optional_profession:
+			formData.optional_profession === 5 ? formData.custom_optional_profession : undefined,
 		
-		"desired_languages": formData?.question16 === "other" ? undefined : [formData?.question16],
-		"custom_desired_language": formData?.custom_desired_language,
+		known_languages: Array.isArray(formData.known_languages) &&
+		formData.known_languages.includes('Boshqa') ? undefined : formData.known_languages,
+		custom_known_languages: Array.isArray(formData.known_languages) &&
+		formData.known_languages.includes('Boshqa') ? formData.custom_known_languages : undefined,
 		
-		// SERIOUS = 0, _("Ha, jiddiy o‘ylayapman")
-		// DOUBTFUL = 1, _("Ha, lekin ishonchim yo‘q")
-		// NO_PLAN = 2, _("Yo‘q, bunday rejam yo‘q")
-		// UNSURE = 3, _("Bilmayman")
-		"abroad_work_interest": formData?.question17,
+		desired_languages:
+			formData.desired_languages === 5 ? undefined : [formData.desired_languages],
+		custom_desired_language:
+			formData.desired_languages === 5 ? formData.custom_desired_languages : undefined,
 		
-		// NURSE = 0, _("Hamshira")
-		// BUILDER = 1, _("Quruvchi")
-		// DRIVER = 2, _("Haydovchi")
-		// CHEF = 3, _("Oshpaz")
-		// DEVELOPER_IT = 4, _("Dasturchi/IT")
-		// TAILOR = 5, _("Tikuvchi")
-		// INDUSTRIAL = 6, _("Ishlab chiqarish")
-		"planned_job": formData?.question18 === 7 ? undefined : formData?.question18,
-		"custom_planned_job": formData?.question18 === 7 ? formData?.custom_planned_job : undefined, // agar planned_job=null bo'lsa
+		abroad_work_interest: formData.abroad_work_interest,
+		planned_job: formData.planned_job === 7 ? undefined : formData.planned_job,
+		custom_planned_job:
+			formData.planned_job === 7 ? formData.custom_planned_job : undefined,
 		
-		// SUPPORT = 0, _("To‘liq qo‘llab-quvvatlaydi")
-		// NEUTRAL = 1, _("Qarshi emas, lekin xavotirda")
-		// AGAINST = 2, _("Qarshi")
-		"parent_support_abroad": formData?.question19,
+		parent_support_abroad: formData.parent_support_abroad,
+		fears_abroad: formData.fears_abroad,
 		
-		"fears_abroad": formData?.question20,
+		family_abroad_status: formData.family_abroad_status,
+		preferred_country: formData.preferred_country === 6 ? undefined : formData.preferred_country,
+		custom_preferred_country:
+			formData.preferred_country === 6 ? formData.custom_preferred_country : undefined,
 		
-		// ONE = 0, _("Ha, biri")
-		// BOTH = 1, _("Ha, ikkisi ham")
-		// NO = 2, _("Yo‘q")
-		// PAST = 3, _("Oldin ishlagan, hozir yo‘q")
-		"family_abroad_status": formData?.question21,
-		
-		// RUSSIA = 0, _("Rossiya")
-		// KOREA = 1, _("Koreya")
-		// GERMANY = 2, _("Germaniya")
-		// UK = 3, _("Buyuk Britaniya")
-		// JAPAN = 4, _("Yaponiya")
-		// TURKEY = 5, _("Turkiya")
-		"preferred_country": formData?.question22 === 6 ? undefined : formData?.question22,
-		"custom_preferred_country": formData?.question22 === 6 ? formData?.custom_preferred_country : undefined, // agar preferred_country=null bo'lsa
-		
-		// RETURN = 0, _("Orqaga qaytaman")
-		// ASK_HELP = 1, _("Yordam so‘rayman va davom etaman")
-		// EXPLORE = 2, _("Yangi yo‘llarni izlayman")
-		"failure_response": formData?.question23,
-		
-		// READY = 0, _("Ha, 100%")
-		// NEED_TO_LEARN_LANGUAGE = 1, _(" Xorijiy tilni o‘rganishim kerak")
-		// NEED_TO_LEARN_SKILLS = 2, _("Kasb-hunar o‘rganishim kerak")
-		// NOT_READY = 3, _("Yo‘q, hozircha rejam yo‘q")
-		"abroad_opportunity": formData?.question24
-	}
+		failure_response: formData.failure_response,
+		abroad_opportunity: formData.abroad_opportunity,
+	};
 	
-	const questionOrder = [
-		'question1',
-		'question2',
-		'question3',
-		'question4',
-		'question5',
-		'question6',
-		'question7',
-		// 'questionCountry',
-		'questionRegion',
-		districts?.length > 0 ? 'questionDistrict' : "",
-		'question9',
-		'question10',
-		'question11',
-		'question12',
-		'question13',
-		'question14',
-		'question15',
-		'question16',
-		'question17',
-		'question18',
-		'question19',
-		'question20',
-		'question21',
-		'question22',
-		'question23',
-		'question24'
-	];
+	
 	
 	const validateForm = () => {
 		const requiredFields = [
-			'question1', // last_name
-			'question2', // first_name
-			'question3', // mid_name
-			'question4', // birth_date
-			'question5', // phone_number
-			'question7', // gender
-			'questionRegion',
-			'questionDistrict',
-			'question9', // current_study_place
-			'question12', // future_plan_after_graduation
-			'question17', // abroad_work_interest
-			'question19', // parent_support_abroad
-			'question21', // family_abroad_status
+			'last_name', 'first_name', 'mid_name', 'birth_date',
+			'phone_number', 'add_phone_number', 'gender',
+			'region', 'district', 'current_study_place',
+			'future_plan_after_graduation', 'abroad_work_interest',
+			'parent_support_abroad', 'family_abroad_status',
+			'preferred_country', 'failure_response', 'abroad_opportunity'
 		];
-		
-		const birthDateRegex = /^\d{4}-\d{2}-\d{2}$/;
-		const phoneRegex = /^998\d{9}$/;
-		
-		if (formData?.question4 && !birthDateRegex.test(formData.question4)) {
-			toast.error("Tug‘ilgan sana YYYY-MM-DD formatida bo‘lishi kerak.");
-			return false;
-		}
-		
-		if (formData?.question5 && !phoneRegex.test(formData.question5)) {
-			toast.error("Telefon raqam 998XXXXXXXXX formatida bo‘lishi kerak.");
-			return false;
-		}
-		
-		if (formData?.question6 && !phoneRegex.test(formData.question6)) {
-			toast.error("Qo‘shimcha raqam 998XXXXXXXXX formatida bo‘lishi kerak.");
-			return false;
-		}
 		
 		for (let field of requiredFields) {
 			if (
@@ -436,21 +198,50 @@ const Main = () => {
 			}
 		}
 		
-		// Custom fieldlar uchun alohida tekshiruv
-		if (formData?.question13 === 'other' && !formData.custom_intended_field_of_study) {
-			toast.error('Iltimos, rejalashtirilgan sohani aniqlashtiring.');
+		const birthDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+		const phoneRegex = /^998\d{9}$/;
+		
+		if (formData?.birth_date && !birthDateRegex.test(formData.birth_date)) {
+			toast.error("Tug‘ilgan sana YYYY-MM-DD formatida bo‘lishi kerak.");
 			return false;
 		}
-		if (formData?.question18 === 7 && !formData.custom_planned_job) {
-			toast.error('Iltimos, rejalashtirilgan ishni aniqlashtiring.');
+		
+		if (formData?.phone_number && !phoneRegex.test(formData.phone_number)) {
+			toast.error("Telefon raqam 998XXXXXXXXX formatida bo‘lishi kerak.");
 			return false;
 		}
-		if (formData?.question15 === 'other' && !formData.custom_known_languages) {
-			toast.error('Iltimos, tilni aniqlashtiring.');
+		
+		if (formData?.add_phone_number && !phoneRegex.test(formData.add_phone_number)) {
+			toast.error("Qo‘shimcha raqam 998XXXXXXXXX formatida bo‘lishi kerak.");
 			return false;
 		}
-		if (formData?.question22 === 6 && !formData.custom_preferred_country) {
-			toast.error('Iltimos, davlatni aniqlashtiring.');
+		
+		// Custom fieldlar uchun validatsiya
+		if (formData.intended_field_of_study === 5 && !formData.custom_intended_field_of_study) {
+			toast.error("Iltimos, o'qimoqchi bo'lgan sohaga aniqlik kiriting.");
+			return false;
+		}
+		
+		if (formData.optional_profession === 5 && !formData.custom_optional_profession) {
+			toast.error("Iltimos, kasbni aniqlashtiring.");
+			return false;
+		}
+		
+		if (formData.planned_job === 7 && !formData.custom_planned_job) {
+			toast.error("Iltimos, ishlamoqchi bo'lgan sohani aniqlashtiring.");
+			return false;
+		}
+		
+		if (formData.desired_languages === 5 && !formData.custom_desired_languages) {
+			toast.error("Iltimos, o'rganmoqchi bo'lgan tilni kiriting.");
+			return false;
+		}
+		
+		if (
+			formData.known_languages?.includes("Boshqa") &&
+			!formData.custom_known_languages
+		) {
+			alert("Iltimos, biladigan tilni aniqlashtiring.");
 			return false;
 		}
 		
@@ -476,15 +267,17 @@ const Main = () => {
 	return (
 		<main className="bg-[rgb(248,249,250)] h-full">
 			<div className="container mx-auto pt-20">
-				<form className="max-w-3xl mx-auto p-6 space-y-6">
-					<h1 className="text-center text-2xl">
+				<form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6 space-y-6">
+					<h1 className="text-center text-2xl font-bold">
 						Yoshlarning kasbiy rejalari va chet elda ishlashga tayyorligi bo‘yicha SO‘ROVNOMA
 					</h1>
 					<span className="text-center flex justify-center mx-auto italic">
 						(maktab va texnikum bitiruvchilari uchun)
 					</span>
 					<p className="text-xl px-2 py-4 bg-white border-t-4 border-t-blue-400 rounded text-justify">
-						&nbsp;&nbsp;&nbsp;Hurmatli, Bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va chet elda o‘qish yoki ishlashga tayyorgarligingiz haqida ma’lumot olish uchun mo‘ljallangan. Javoblaringiz asosida sizga mos ta’lim va kasb-hunar loyihalarini yaratish rejalashtirilmoqda.
+						&nbsp;&nbsp;&nbsp;Hurmatli, Bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va
+						chet elda o‘qish yoki ishlashga tayyorgarligingiz haqida ma’lumot olish uchun mo‘ljallangan. Javoblaringiz
+						asosida sizga mos ta’lim va kasb-hunar loyihalarini yaratish rejalashtirilmoqda.
 						<br/>
 						<br/>
 						&nbsp;&nbsp;&nbsp;So‘rovnoma shaxsiy ma’lumotlar xavfsizligini ta’minlagan holda o‘tkaziladi.
@@ -493,131 +286,962 @@ const Main = () => {
 						&nbsp;&nbsp;&nbsp;Iltimos, barcha savollarga to‘liq va samimiy javob bering. Katta Rahmat!
 					</p>
 					
-					{questionOrder.map((qKey, index) => {
-						const aKey = qKey?.replace('question', 'answer');
-						
-						if ((qKey === 'question10' || qKey === 'question11') && !showTechFields) return null;
-						
-						// if (qKey === 'questionCountry') {
-						// 	return (
-						// 		<div key={qKey} className="py-4 px-2 bg-white rounded">
-						// 			<label className="block font-semibold mb-2">{t('Davlat')}</label>
-						// 			{renderSelect(qKey, options.regions, (country) => {
-						// 				setRegions(country.regions || []);
-						// 				setDistricts([]);
-						// 				setSelectedRegionId(null);
-						// 				handleChange('questionRegion', '');
-						// 				handleChange('questionDistrict', '');
-						// 			})}
-						// 		</div>
-						// 	);
-						// }
-						
-						if (qKey === 'questionRegion') {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t('Viloyat')}</label>
-									{renderSelect(qKey, regions, (region) => {
-										setSelectedRegionId(region.id);
-									})}
-								</div>
-							);
-						}
-						
-						if (qKey === 'questionDistrict' && districts.length > 0) {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t('Tuman')}</label>
-									{renderSelect(qKey, districts)}
-								</div>
-							);
-						}
-						
-						if (qKey === 'question10' && showTechFields) {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t(qKey)}</label>
-									{renderRadioGroup(qKey, options.specialties, (specialtie) => {
-										handleChange('question10', specialtie?.id);
-									})}
-								</div>
-							);
-						}
-						
-						if (qKey === 'question14') {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t(qKey)}</label>
-									{renderRadioGroup(qKey, options?.professions, (profession) => {
-										handleChange('question14', profession?.id);
-									})}
-								</div>
-							);
-						}
-						
-						if (qKey === 'question15') {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t(qKey)}</label>
-									{renderCheckboxGroup(qKey, options?.languages || [])}
-								</div>
-							);
-						}
-						
-						if (qKey === 'question16') {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t(qKey)}</label>
-									{renderRadioGroup(qKey, options?.languages, (language) => {
-										handleChange('question16', language?.id);
-									})}
-								</div>
-							);
-						}
-						
-						if (qKey === 'question20') {
-							return (
-								<div key={qKey} className="py-4 px-2 bg-white rounded">
-									<label className="block font-semibold mb-2">{t(qKey)}</label>
-									{renderCheckboxGroup(qKey, options?.fears_abroad || [])}
-								</div>
-							);
-						}
-						
-						const answers = t(aKey, {returnObjects: true});
-						
-						return (
-							<div key={index} className="py-4 px-2 bg-white rounded">
-								<label className="block font-semibold mb-2">{t(qKey)}</label>
-								{Array.isArray(answers) ? renderRadioGroup(qKey, answers)
-									: (answers !== "" &&
-										<input
-											type={
-												qKey === "question4" ? "date"
-													: (qKey === "question5" || qKey === "question6") ? "tel"
-														: "text"
-											}
-											placeholder={
-												qKey === "question4"
-													? "YYYY-MM-DD"
-													: (qKey === "question5" || qKey === "question6")
-														? "998xxxxxxxxx"
-														: ""
-											}
-											className="w-full p-2 border border-gray-300 rounded"
-											value={formData[qKey] || ''}
-											onChange={(e) => handleChange(qKey, e.target.value)}
-										/>
-									
-									)}
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">1. Familiyangiz</label>
+						<input
+							required
+							type="text"
+							placeholder="Familiyangiz"
+							className="w-full p-2 border border-gray-300 rounded"
+							value={formData['last_name'] || ''}
+							onChange={(e) => handleChange("last_name", e.target.value)}
+						/>
+					</div>
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">2. Ismingiz</label>
+						<input
+							required
+							type="text"
+							placeholder="Ismingiz"
+							className="w-full p-2 border border-gray-300 rounded"
+							value={formData['first_name'] || ''}
+							onChange={(e) => handleChange("first_name", e.target.value)}
+						/>
+					</div>
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">3. Sharifingiz</label>
+						<input
+							required
+							type="text"
+							placeholder="Sharifingiz"
+							className="w-full p-2 border border-gray-300 rounded"
+							value={formData['mid_name'] || ''}
+							onChange={(e) => handleChange("mid_name", e.target.value)}
+						/>
+					</div>
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">4. Tug'ilgan kuningiz</label>
+						<input
+							required
+							type="date"
+							placeholder="Tug'ilgan kuningiz"
+							className="w-full p-2 border border-gray-300 rounded"
+							value={formData['birth_date'] || ''}
+							onChange={(e) => {
+								const birthDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+								if (birthDateRegex.test(e.target.value)) {
+									handleChange("birth_date", e.target.value)
+								}
+							}}
+						/>
+					</div>
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">5. Telefon raqamingiz</label>
+						<input
+							required
+							type="text"
+							placeholder="998xxxxxxxxx"
+							className="w-full p-2 border border-gray-300 rounded"
+							value={formData['phone_number'] || ''}
+							onChange={(e) =>
+									handleChange("phone_number", e.target.value)
+							}
+						/>
+					</div>
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">6. Qo'shimcha telefon raqamingiz</label>
+						<input
+							required
+							type="text"
+							placeholder="998xxxxxxxxx"
+							className="w-full p-2 border border-gray-300 rounded"
+							value={formData['add_phone_number'] || ''}
+							onChange={(e) => {
+									handleChange("add_phone_number", e.target.value)
+							}}
+						/>
+					</div>
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">7. Jinsingiz</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"gender"}
+									value={"0"}
+									checked={formData["gender"] === 0}
+									onChange={() => handleChange("gender", 0)}
+								/>
+								<span>Erkak</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"gender"}
+									value={"1"}
+									checked={formData["gender"] === 1}
+									onChange={() => handleChange("gender", 1)}
+								/>
+								<span>Ayol</span>
+							</label>
+						</div>
+					</div>
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2" htmlFor="region">8. Hozir yashayotgan hududingiz
+							(viloyat)</label>
+						<select
+							name={"region"}
+							className="border border-gray-300 rounded px-3 py-2 w-full"
+							value={formData["region"] || ''}
+							onChange={(e) => {
+								handleChange("region", e.target.value)
+								setSelectedRegionId(e.target.value);
+							}}
+						>
+							<option value="" disabled={formData["region"]}>{t('Tanlang')}</option>
+							{regions?.map((el) => (
+								<option key={el?.id} value={el?.id}>{el?.name}</option>
+							))}
+						</select>
+					</div>
+					{formData["region"] && (
+						<div className="py-4 px-2 bg-white rounded">
+							<label className="block font-semibold mb-2" htmlFor="region">8. Hozir yashayotgan hududingiz (tuman)</label>
+							<select
+								name={"district"}
+								className="border border-gray-300 rounded px-3 py-2 w-full"
+								value={formData["district"] || ''}
+								onChange={(e) => handleChange("district", e.target.value)}
+							>
+								<option value="" disabled={formData["district"]}>{t('Tanlang')}</option>
+								{districts?.map((el) => (
+									<option key={el?.id} value={el?.id}>{el?.name}</option>
+								))}
+							</select>
+						</div>
+					)}
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">9. Ayni vaqtda qayerni tamomlaysiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"current_study_place"}
+									value={"0"}
+									checked={formData["current_study_place"] === 0}
+									onChange={() => handleChange("current_study_place", 0)}
+								/>
+								<span>Maktab (11 sinf)</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"current_study_place"}
+									value={1}
+									checked={formData["current_study_place"] === 1}
+									onChange={() => handleChange("current_study_place", 1)}
+								/>
+								<span>Texnikum</span>
+							</label>
+						</div>
+					</div>
+					
+					{formData["current_study_place"] === 1 && (
+						<>
+							<div className="py-4 px-2 bg-white rounded">
+								<label className="block font-semibold mb-2">10. Texnikumni qaysi yo'nalishda tamomlayapsiz?</label>
+								{options.specialties && options.specialties?.map((el) => (
+									<div key={el?.id} className="space-y-2">
+										<label className="flex items-center gap-2">
+											<input
+												type="radio"
+												name={"college_specialty"}
+												value={el?.id}
+												checked={formData["college_specialty"] === el?.id}
+												onChange={() => handleChange("college_specialty", el?.id)}
+											/>
+											<span>{el?.name}</span>
+										</label>
+									</div>
+								))}
 							</div>
-						);
-					})}
+							<div className="py-4 px-2 bg-white rounded">
+								<label className="block font-semibold mb-2">11. Sohangiz bo‘yicha sizda qanday imkoniyatlar bor deb
+									o‘ylaysiz?</label>
+								<div className="space-y-2">
+									<label className="flex items-center gap-2">
+										<input
+											type="radio"
+											name={"professional_readiness"}
+											value={"0"}
+											checked={formData["professional_readiness"] === 0}
+											onChange={() => handleChange("professional_readiness", 0)}
+										/>
+										<span>Faqat diplomim bor, sohamni yaxshi bilmayman</span>
+									</label>
+								</div>
+								<div className="space-y-2">
+									<label className="flex items-center gap-2">
+										<input
+											type="radio"
+											name={"professional_readiness"}
+											value={"1"}
+											checked={formData["professional_readiness"] === 1}
+											onChange={() => handleChange("professional_readiness", 1)}
+										/>
+										<span>O‘z sohamni yaxshi bilaman</span>
+									</label>
+								</div>
+								<div className="space-y-2">
+									<label className="flex items-center gap-2">
+										<input
+											type="radio"
+											name={"professional_readiness"}
+											value={"2"}
+											checked={formData["professional_readiness"] === 2}
+											onChange={() => handleChange("professional_readiness", 2)}
+										/>
+										<span>Soham bo‘yicha tajribaga ham egaman</span>
+									</label>
+								</div>
+								<div className="space-y-2">
+									<label className="flex items-center gap-2">
+										<input
+											type="radio"
+											name={"professional_readiness"}
+											value={"3"}
+											checked={formData["professional_readiness"] === 3}
+											onChange={() => handleChange("professional_readiness", 3)}
+										/>
+										<span>Soham bo‘yicha qo‘shimcha kursda o‘qiganman</span>
+									</label>
+								</div>
+								<div className="space-y-2">
+									<label className="flex items-center gap-2">
+										<input
+											type="radio"
+											name={"professional_readiness"}
+											value={"4"}
+											checked={formData["professional_readiness"] === 4}
+											onChange={() => handleChange("professional_readiness", 4)}
+										/>
+										<span>Soham bo‘yicha qo‘shimcha kursda o‘qishni xohlayman</span>
+									</label>
+								</div>
+							</div>
+						</>
+					)}
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">12. Maktab/texnikumni tamomlagach nima qilmoqchisiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"future_plan_after_graduation"}
+									value={"0"}
+									checked={formData["future_plan_after_graduation"] === 0}
+									onChange={() => handleChange("future_plan_after_graduation", 0)}
+								/>
+								<span>Universitet/institutga o‘qishga kirmoqchiman</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"future_plan_after_graduation"}
+									value={"1"}
+									checked={formData["future_plan_after_graduation"] === 1}
+									onChange={() => handleChange("future_plan_after_graduation", 1)}
+								/>
+								<span>O‘zbekistonda ishlamoqchiman</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"future_plan_after_graduation"}
+									value={"2"}
+									checked={formData["future_plan_after_graduation"] === 2}
+									onChange={() => handleChange("future_plan_after_graduation", 2)}
+								/>
+								<span>Chet elga ishlashga ketmoqchiman</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"future_plan_after_graduation"}
+									value={"3"}
+									checked={formData["future_plan_after_graduation"] === 3}
+									onChange={() => handleChange("future_plan_after_graduation", 3)}
+								/>
+								<span>Kasb-hunar o‘rganmoqchiman</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"future_plan_after_graduation"}
+									value={"4"}
+									checked={formData["future_plan_after_graduation"] === 4}
+									onChange={() => handleChange("future_plan_after_graduation", 4)}
+								/>
+								<span>Hozircha aniq rejam yo'q</span>
+							</label>
+						</div>
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">13. Agar o‘qishni rejalashtirayotgan bo‘lsangiz, qaysi sohada
+							o‘qimoqchisiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"intended_field_of_study"}
+									value={"0"}
+									checked={formData["intended_field_of_study"] === 0}
+									onChange={() => handleChange("intended_field_of_study", 0)}
+								/>
+								<span>Tbbiyot</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"intended_field_of_study"}
+									value={"1"}
+									checked={formData["intended_field_of_study"] === 1}
+									onChange={() => handleChange("intended_field_of_study", 1)}
+								/>
+								<span>Muhandislik</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"intended_field_of_study"}
+									value={"2"}
+									checked={formData["intended_field_of_study"] === 2}
+									onChange={() => handleChange("intended_field_of_study", 2)}
+								/>
+								<span>Moliya/Iqtisod</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"intended_field_of_study"}
+									value={"3"}
+									checked={formData["intended_field_of_study"] === 3}
+									onChange={() => handleChange("intended_field_of_study", 3)}
+								/>
+								<span>Axborot texnologiyalari</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"intended_field_of_study"}
+									value={"4"}
+									checked={formData["intended_field_of_study"] === 4}
+									onChange={() => handleChange("intended_field_of_study", 4)}
+								/>
+								<span>San'at/yoshlar ishi</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"intended_field_of_study"}
+									value={"5"}
+									checked={formData["intended_field_of_study"] === 5}
+									onChange={() => handleChange("intended_field_of_study", 5)}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						{formData["intended_field_of_study"] === 5 && (
+							<div className="space-y-2">
+								<input
+									required
+									type="text"
+									placeholder="Sohani kiriting"
+									className="w-full p-2 border border-gray-300 rounded"
+									value={formData['custom_intended_field_of_study'] || ''}
+									onChange={(e) => handleChange("custom_intended_field_of_study", e.target.value)}
+								/>
+							</div>
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">14. Agar kasb-hunar o‘rganmoqchi bo‘lsangiz qaysi kasbni tanlar
+							edingiz?</label>
+						{options.professions && options.professions?.map((el) => (
+							<div key={el?.id} className="space-y-2">
+								<label className="flex items-center gap-2">
+									<input
+										type="radio"
+										name={"optional_profession"}
+										value={el?.id}
+										checked={formData["optional_profession"] === el?.id}
+										onChange={() => handleChange("optional_profession", el?.id)}
+									/>
+									<span>{el?.name}</span>
+								</label>
+							</div>
+						))}
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"optional_profession"}
+									value={5}
+									checked={formData["optional_profession"] === 5}
+									onChange={() => handleChange("optional_profession", 5)}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						{formData["optional_profession"] === 5 && (
+							<div className="space-y-2">
+								<input
+									required
+									type="text"
+									placeholder="Sohani kiriting"
+									className="w-full p-2 border border-gray-300 rounded"
+									value={formData['custom_optional_profession'] || ''}
+									onChange={(e) => handleChange("custom_optional_profession", e.target.value)}
+								/>
+							</div>
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						{renderMultipleCheckboxGroup(
+							'known_languages',
+							[...options.languages, {id: 'Boshqa', name: 'Boshqa'}],
+							"15. Qaysi xorijiy tilni bilasiz? (bittadan ko’p javobni tanlashingiz mumkin)"
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">16. Qaysi tilni o'rganmoqchisiz?</label>
+						{options.languages && options.languages?.map((el) => (
+							<div key={el?.id} className="space-y-2">
+								<label className="flex items-center gap-2">
+									<input
+										type="radio"
+										name={"desired_languages"}
+										value={el?.id}
+										checked={formData["desired_languages"] === el?.id}
+										onChange={() => handleChange("desired_languages", el?.id)}
+									/>
+									<span>{el?.name}</span>
+								</label>
+							</div>
+						))}
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"desired_languages"}
+									value={5}
+									checked={formData["desired_languages"] === 5}
+									onChange={() => handleChange("desired_languages", 5)}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						{formData["desired_languages"] === 5 && (
+							<div className="space-y-2">
+								<input
+									required
+									type="text"
+									placeholder="Sohani kiriting"
+									className="w-full p-2 border border-gray-300 rounded"
+									value={formData['custom_desired_languages'] || ''}
+									onChange={(e) => handleChange("custom_desired_languages", e.target.value)}
+								/>
+							</div>
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">17. Chet elda ishlash haqida o‘ylaganmisiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_work_interest"}
+									value={"0"}
+									checked={formData["abroad_work_interest"] === 0}
+									onChange={() => handleChange("abroad_work_interest", 0)}
+								/>
+								<span>Ha, jiddiy o'ylayapman</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_work_interest"}
+									value={"1"}
+									checked={formData["abroad_work_interest"] === 1}
+									onChange={() => handleChange("abroad_work_interest", 1)}
+								/>
+								<span>Ha, lekin ishonchim yo‘q</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_work_interest"}
+									value={"2"}
+									checked={formData["abroad_work_interest"] === 2}
+									onChange={() => handleChange("abroad_work_interest", 2)}
+								/>
+								<span>Ha, ishonchli korxona bo‘lsa ishlardim</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_work_interest"}
+									value={"3"}
+									checked={formData["abroad_work_interest"] === 3}
+									onChange={() => handleChange("abroad_work_interest", 3)}
+								/>
+								<span>Yo‘q, bunday rejam yo‘q</span>
+							</label>
+						</div>
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">18. Agar ishlashni rejalashtirayotgan bo‘lsangiz, qaysi sohada
+							ishlar edingiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"0"}
+									checked={formData["planned_job"] === 0}
+									onChange={() => handleChange("planned_job", 0)}
+								/>
+								<span>Hamshira</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"1"}
+									checked={formData["planned_job"] === 1}
+									onChange={() => handleChange("planned_job", 1)}
+								/>
+								<span>Quruvchi</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"2"}
+									checked={formData["planned_job"] === 2}
+									onChange={() => handleChange("planned_job", 2)}
+								/>
+								<span>Haydovchi</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"3"}
+									checked={formData["planned_job"] === 3}
+									onChange={() => handleChange("planned_job", 3)}
+								/>
+								<span>Oshpaz</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"4"}
+									checked={formData["planned_job"] === 4}
+									onChange={() => handleChange("planned_job", 4)}
+								/>
+								<span>Dasturchi/IT</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"5"}
+									checked={formData["planned_job"] === 5}
+									onChange={() => handleChange("planned_job", 5)}
+								/>
+								<span>Tikuvchi</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"6"}
+									checked={formData["planned_job"] === 6}
+									onChange={() => handleChange("planned_job", 6)}
+								/>
+								<span>Ishlab chiqarish</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"planned_job"}
+									value={"7"}
+									checked={formData["planned_job"] === 7}
+									onChange={() => handleChange("planned_job", 7)}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						{formData["planned_job"] === 7 && (
+							<input
+								type="text"
+								className="mt-2 w-full border border-gray-300 p-2 rounded"
+								placeholder="Iltimos, aniqlashtiring"
+								value={formData[`custom_planned_job`] || ''}
+								onChange={(e) => handleChange(`custom_planned_job`, e.target.value)}
+							/>
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">19. Ota-onangiz sizning xorijga chiqishingizga qanday
+							munosabatda?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"parent_support_abroad"}
+									value={"0"}
+									checked={formData["parent_support_abroad"] === 0}
+									onChange={() => handleChange("parent_support_abroad", 0)}
+								/>
+								<span>To‘liq qo‘llab-quvvatlaydi</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"parent_support_abroad"}
+									value={"1"}
+									checked={formData["parent_support_abroad"] === 1}
+									onChange={() => handleChange("parent_support_abroad", 1)}
+								/>
+								<span>Qarshi emas, lekin xavotirda</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"parent_support_abroad"}
+									value={"2"}
+									checked={formData["parent_support_abroad"] === 2}
+									onChange={() => handleChange("parent_support_abroad", 2)}
+								/>
+								<span>Qarshi</span>
+							</label>
+						</div>
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						{renderMultipleCheckboxGroup(
+							'fears_abroad',
+							[...options.fears_abroad],
+							"20. Agar chet elda ishlasangiz, quyidagilardan eng ko‘p nimadan qo‘rqasiz? (Bir nechtasini belgilang)"
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">21. Ota-onangiz yoki yaqinlaringiz xorijda ishlayaptimi?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"family_abroad_status"}
+									value={"0"}
+									checked={formData["family_abroad_status"] === 0}
+									onChange={() => handleChange("family_abroad_status", 0)}
+								/>
+								<span>Ha, biri</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"family_abroad_status"}
+									value={"1"}
+									checked={formData["family_abroad_status"] === 1}
+									onChange={() => handleChange("family_abroad_status", 1)}
+								/>
+								<span>Ha, ikkisi ham</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"family_abroad_status"}
+									value={"2"}
+									checked={formData["family_abroad_status"] === 2}
+									onChange={() => handleChange("family_abroad_status", 2)}
+								/>
+								<span>Yo'q</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"family_abroad_status"}
+									value={"3"}
+									checked={formData["family_abroad_status"] === 3}
+									onChange={() => handleChange("family_abroad_status", 3)}
+								/>
+								<span>Oldin ishlagan, hozir yo'q</span>
+							</label>
+						</div>
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">22. Agar ishlash uchun chet elga borsangiz, qaysi davlatni
+							tanlardingiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"preferred_country"}
+									value={"0"}
+									checked={formData["preferred_country"] === 0}
+									onChange={() => handleChange("preferred_country", 0)}
+								/>
+								<span>Janubiy Koreya</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"preferred_country"}
+									value={"1"}
+									checked={formData["preferred_country"] === 1}
+									onChange={() => handleChange("preferred_country", 1)}
+								/>
+								<span>Rossiya</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"preferred_country"}
+									value={"2"}
+									checked={formData["preferred_country"] === 2}
+									onChange={() => handleChange("preferred_country", 2)}
+								/>
+								<span>Germaniya</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"preferred_country"}
+									value={"3"}
+									checked={formData["preferred_country"] === 3}
+									onChange={() => handleChange("preferred_country", 3)}
+								/>
+								<span>Buyuk Britaniya</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"preferred_country"}
+									value={"4"}
+									checked={formData["preferred_country"] === 4}
+									onChange={() => handleChange("preferred_country", 4)}
+								/>
+								<span>Yaponiya</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"preferred_country"}
+									value={"5"}
+									checked={formData["preferred_country"] === 5}
+									onChange={() => handleChange("preferred_country", 5)}
+								/>
+								<span>Turkiya</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"preferred_country"}
+									value={"6"}
+									checked={formData["preferred_country"] === 6}
+									onChange={() => handleChange("preferred_country", 6)}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						
+						{formData["preferred_country"] === 6 && (
+							<input
+								type="text"
+								className="mt-2 w-full border border-gray-300 p-2 rounded"
+								placeholder="Iltimos, aniqlashtiring"
+								value={formData[`custom_preferred_country`] || ''}
+								onChange={(e) => handleChange(`custom_preferred_country`, e.target.value)}
+							/>
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">23. Agar siz xorijda yurganingizda muvaffaqiyatsizlikka uchrasangiz,
+							nima qilasiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"failure_response"}
+									value={"0"}
+									checked={formData["failure_response"] === 0}
+									onChange={() => handleChange("failure_response", 0)}
+								/>
+								<span>Ortga qaytaman</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"failure_response"}
+									value={"1"}
+									checked={formData["failure_response"] === 1}
+									onChange={() => handleChange("failure_response", 1)}
+								/>
+								<span>Yordam so‘rayman va davom etaman</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"failure_response"}
+									value={"2"}
+									checked={formData["failure_response"] === 2}
+									onChange={() => handleChange("failure_response", 2)}
+								/>
+								<span>Yangi yo'llarni izlayman</span>
+							</label>
+						</div>
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">24. Agar sizga imkoniyat berilsa, 1 yil ichida xorijga chiqib
+							ishlashga tayyormisiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_opportunity"}
+									value={"0"}
+									checked={formData["abroad_opportunity"] === 0}
+									onChange={() => handleChange("abroad_opportunity", 0)}
+								/>
+								<span>Ha, 100%</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_opportunity"}
+									value={"1"}
+									checked={formData["abroad_opportunity"] === 1}
+									onChange={() => handleChange("abroad_opportunity", 1)}
+								/>
+								<span>Xorijiy tilni o'rganishim kerak</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_opportunity"}
+									value={"2"}
+									checked={formData["abroad_opportunity"] === 2}
+									onChange={() => handleChange("abroad_opportunity", 2)}
+								/>
+								<span>Kasb-hunar o'rganishim kerak</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"abroad_opportunity"}
+									value={"3"}
+									checked={formData["abroad_opportunity"] === 3}
+									onChange={() => handleChange("abroad_opportunity", 3)}
+								/>
+								<span>Yo'q, hozircha rejam yo'q</span>
+							</label>
+						</div>
+					</div>
 					
 					<button
 						type="submit"
 						className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded flex justify-center mx-auto"
-						onClick={handleSubmit}
 					>
 						{t('Yuborish') || 'Yuborish'}
 					</button>
