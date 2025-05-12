@@ -640,7 +640,7 @@ const Main = () => {
 									checked={formData["intended_field_of_study"] === 0}
 									onChange={() => handleChange("intended_field_of_study", 0)}
 								/>
-								<span>Tbbiyot</span>
+								<span>Tibbiyot</span>
 							</label>
 						</div>
 						<div className="space-y-2">
