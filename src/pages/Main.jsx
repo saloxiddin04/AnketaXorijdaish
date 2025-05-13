@@ -176,6 +176,7 @@ const Main = () => {
 		expected_salary: formData.expected_salary,
 		job_info_source: formData.job_info_source === 6 ? undefined : formData.job_info_source,
 		custom_job_info_source: formData.job_info_source === 6 ? formData.custom_job_info_source : undefined,
+		educational_institution: formData.educational_institution
 	};
 	
 	
@@ -191,7 +192,8 @@ const Main = () => {
 			'failure_response',
 			'abroad_opportunity',
 			'expected_salary',
-			'job_info_source'
+			'job_info_source',
+			'educational_institution'
 		];
 		
 		for (let field of requiredFields) {
@@ -485,10 +487,22 @@ const Main = () => {
 						</div>
 					</div>
 					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">10. Ta'lim muassasangizni nomini yozing.</label>
+						<input
+							required
+							type="text"
+							placeholder="Ta'lim muassasangizni nomini yozing"
+							className="w-full p-2 border border-gray-300 rounded"
+							value={formData['educational_institution'] || ''}
+							onChange={(e) => handleChange("educational_institution", e.target.value)}
+						/>
+					</div>
+					
 					{(formData["current_study_place"] === 1 || formData["current_study_place"] === 2) && (
 						<>
 							<div className="py-4 px-2 bg-white rounded">
-								<label className="block font-semibold mb-2">10. Texnikumni qaysi yo'nalishda tamomlayapsiz?</label>
+								<label className="block font-semibold mb-2">11. Texnikumni qaysi yo'nalishda tamomlayapsiz?</label>
 								{options.specialties && options.specialties?.map((el) => (
 									<div key={el?.id} className="space-y-2">
 										<label className="flex items-center gap-2">
@@ -529,7 +543,7 @@ const Main = () => {
 								)}
 							</div>
 							<div className="py-4 px-2 bg-white rounded">
-								<label className="block font-semibold mb-2">11. Sohangiz bo‘yicha sizda qanday imkoniyatlar bor deb
+								<label className="block font-semibold mb-2">12. Sohangiz bo‘yicha sizda qanday imkoniyatlar bor deb
 									o‘ylaysiz?</label>
 								<div className="space-y-2">
 									<label className="flex items-center gap-2">
@@ -1269,7 +1283,8 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">24. Xorijda mavjud bo‘sh ish o‘rinlari haqidagi ma’lumotlarni qayerdan olasiz?</label>
+						<label className="block font-semibold mb-2">24. Xorijda mavjud bo‘sh ish o‘rinlari haqidagi ma’lumotlarni
+							qayerdan olasiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
 								<input
