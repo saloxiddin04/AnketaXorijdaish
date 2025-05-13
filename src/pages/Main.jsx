@@ -132,10 +132,10 @@ const Main = () => {
 		gender: formData.gender,
 		
 		current_study_place: formData.current_study_place,
-		college_specialty: (formData.current_study_place === 1 && formData.college_specialty !== 5) ? formData.college_specialty : undefined,
+		college_specialty: ((formData.current_study_place === 1 || formData.current_study_place === 2) && formData.college_specialty !== 5) ? formData.college_specialty : undefined,
 		custom_college_specialty: formData.college_specialty === 5 ? formData.custom_college_specialty : undefined,
 		professional_readiness:
-			formData.current_study_place === 1 ? formData.professional_readiness : undefined,
+			(formData.current_study_place === 1 || formData.current_study_place === 2) ? formData.professional_readiness : undefined,
 		
 		future_plan_after_graduation: formData.future_plan_after_graduation === 5 ? undefined : formData.future_plan_after_graduation,
 		custom_future_plan_after_graduation: formData.future_plan_after_graduation === 5 ? formData.custom_future_plan_after_graduation : undefined,
