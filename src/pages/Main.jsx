@@ -137,7 +137,8 @@ const Main = () => {
 		professional_readiness:
 			formData.current_study_place === 1 ? formData.professional_readiness : undefined,
 		
-		future_plan_after_graduation: formData.future_plan_after_graduation,
+		future_plan_after_graduation: formData.future_plan_after_graduation === 5 ? undefined : formData.future_plan_after_graduation,
+		custom_future_plan_after_graduation: formData.future_plan_after_graduation === 5 ? formData.custom_future_plan_after_graduation : undefined,
 		
 		intended_field_of_study:
 			formData.intended_field_of_study === 5 ? undefined : formData.intended_field_of_study,
@@ -172,6 +173,9 @@ const Main = () => {
 		
 		failure_response: formData.failure_response,
 		abroad_opportunity: formData.abroad_opportunity,
+		expected_salary: formData.expected_salary,
+		job_info_source: formData.job_info_source === 6 ? undefined : formData.job_info_source,
+		custom_job_info_source: formData.job_info_source === 6 ? formData.custom_job_info_source : undefined,
 	};
 	
 	
@@ -183,7 +187,11 @@ const Main = () => {
 			'region', 'district', 'current_study_place',
 			'future_plan_after_graduation', 'abroad_work_interest',
 			'parent_support_abroad', 'family_abroad_status',
-			'preferred_country', 'failure_response', 'abroad_opportunity'
+			'preferred_country',
+			'failure_response',
+			'abroad_opportunity',
+			'expected_salary',
+			'job_info_source'
 		];
 		
 		for (let field of requiredFields) {
@@ -218,6 +226,16 @@ const Main = () => {
 		// Custom fieldlar uchun validatsiya
 		if (formData.intended_field_of_study === 5 && !formData.custom_intended_field_of_study) {
 			toast.error("Iltimos, o'qimoqchi bo'lgan sohaga aniqlik kiriting.");
+			return false;
+		}
+		
+		if (formData.future_plan_after_graduation === 5 && !formData.custom_future_plan_after_graduation) {
+			toast.error("Iltimos, o'qimoqchi bo'lgan sohaga aniqlik kiriting.");
+			return false;
+		}
+		
+		if (formData.job_info_source === 6 && !formData.custom_job_info_source) {
+			toast.error("Iltimos,  Xorijda mavjud bo‘sh ish o‘rinlari haqidagi ma’lumotlarni ko'rsating.");
 			return false;
 		}
 		
@@ -347,7 +365,7 @@ const Main = () => {
 							className="w-full p-2 border border-gray-300 rounded"
 							value={formData['phone_number'] || ''}
 							onChange={(e) =>
-									handleChange("phone_number", e.target.value)
+								handleChange("phone_number", e.target.value)
 							}
 						/>
 					</div>
@@ -360,7 +378,7 @@ const Main = () => {
 							className="w-full p-2 border border-gray-300 rounded"
 							value={formData['add_phone_number'] || ''}
 							onChange={(e) => {
-									handleChange("add_phone_number", e.target.value)
+								handleChange("add_phone_number", e.target.value)
 							}}
 						/>
 					</div>
@@ -411,7 +429,8 @@ const Main = () => {
 					</div>
 					{formData["region"] && (
 						<div className="py-4 px-2 bg-white rounded">
-							<label className="block font-semibold mb-2" htmlFor="region">8. Hozir yashayotgan hududingiz (tuman)</label>
+							<label className="block font-semibold mb-2" htmlFor="region">8. Hozir yashayotgan hududingiz
+								(tuman)</label>
 							<select
 								name={"district"}
 								className="border border-gray-300 rounded px-3 py-2 w-full"
@@ -452,9 +471,21 @@ const Main = () => {
 								<span>Texnikum</span>
 							</label>
 						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"current_study_place"}
+									value={1}
+									checked={formData["current_study_place"] === 2}
+									onChange={() => handleChange("current_study_place", 2)}
+								/>
+								<span>Oliy ta'lim muassasi</span>
+							</label>
+						</div>
 					</div>
 					
-					{formData["current_study_place"] === 1 && (
+					{formData["current_study_place"] === 1 || formData["current_study_place"] === 2 && (
 						<>
 							<div className="py-4 px-2 bg-white rounded">
 								<label className="block font-semibold mb-2">10. Texnikumni qaysi yo'nalishda tamomlayapsiz?</label>
@@ -565,7 +596,7 @@ const Main = () => {
 					)}
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">12. Maktab/texnikumni tamomlagach nima qilmoqchisiz?</label>
+						<label className="block font-semibold mb-2">12. Maktab/Texnikum/OTMni tamomlagach nima qilmoqchisiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
 								<input
@@ -575,7 +606,7 @@ const Main = () => {
 									checked={formData["future_plan_after_graduation"] === 0}
 									onChange={() => handleChange("future_plan_after_graduation", 0)}
 								/>
-								<span>Universitet/institutga o‘qishga kirmoqchiman</span>
+								<span>O'qishni davom ettiraman</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -626,6 +657,30 @@ const Main = () => {
 								<span>Hozircha aniq rejam yo'q</span>
 							</label>
 						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"future_plan_after_graduation"}
+									value={"5"}
+									checked={formData["future_plan_after_graduation"] === 5}
+									onChange={() => handleChange("future_plan_after_graduation", 5)}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						{formData["future_plan_after_graduation"] === 5 && (
+							<div className="space-y-2">
+								<input
+									required
+									type="text"
+									placeholder="Sohani kiriting"
+									className="w-full p-2 border border-gray-300 rounded"
+									value={formData['custom_future_plan_after_graduation'] || ''}
+									onChange={(e) => handleChange("custom_future_plan_after_graduation", e.target.value)}
+								/>
+							</div>
+						)}
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
@@ -1173,7 +1228,123 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">23. Agar siz xorijda yurganingizda muvaffaqiyatsizlikka uchrasangiz,
+						<label className="block font-semibold mb-2">23. Xorijda qancha miqdorda oylik ish haqi ehtiyojlaringizni
+							qondiradi?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"expected_salary"}
+									value={"0"}
+									checked={formData["expected_salary"] === 0}
+									onChange={() => handleChange("expected_salary", 0)}
+								/>
+								<span>1000 – 2000 AQSh dollari</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"expected_salary"}
+									value={"1"}
+									checked={formData["expected_salary"] === 1}
+									onChange={() => handleChange("expected_salary", 1)}
+								/>
+								<span>2000 – 3000 AQSh dollari</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"expected_salary"}
+									value={"2"}
+									checked={formData["expected_salary"] === 2}
+									onChange={() => handleChange("expected_salary", 2)}
+								/>
+								<span>3000 AQSh dollaridan yuqori</span>
+							</label>
+						</div>
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">24. Xorijda mavjud bo‘sh ish o‘rinlari haqidagi ma’lumotlarni qayerdan olasiz?</label>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"job_info_source"}
+									value={"0"}
+									checked={formData["job_info_source"] === 0}
+									onChange={() => handleChange("job_info_source", 0)}
+								/>
+								<span>Ijtimoiy tarmoqlar orqali</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"job_info_source"}
+									value={"1"}
+									checked={formData["job_info_source"] === 1}
+									onChange={() => handleChange("job_info_source", 1)}
+								/>
+								<span>Internet qidiruv ilovalari orqali</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"job_info_source"}
+									value={"2"}
+									checked={formData["job_info_source"] === 2}
+									onChange={() => handleChange("job_info_source", 2)}
+								/>
+								<span>Xalqaro bo‘sh ish o‘rinlari platformalari (LinkedIn, HH.ru, Indeed, Glassdoor va h.k)</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"job_info_source"}
+									value={"3"}
+									checked={formData["job_info_source"] === 3}
+									onChange={() => handleChange("job_info_source", 3)}
+								/>
+								<span>Migratsiya Agentligi rasmiy sahifalaridan (xorijdaish.uz)</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"job_info_source"}
+									value={"6"}
+									checked={formData["job_info_source"] === 6}
+									onChange={() => handleChange("job_info_source", 6)}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						
+						{formData["job_info_source"] === 6 && (
+							<input
+								type="text"
+								className="mt-2 w-full border border-gray-300 p-2 rounded"
+								placeholder="Iltimos, aniqlashtiring"
+								value={formData[`custom_job_info_source`] || ''}
+								onChange={(e) => handleChange(`custom_job_info_source`, e.target.value)}
+							/>
+						)}
+					</div>
+					
+					<div className="py-4 px-2 bg-white rounded">
+						<label className="block font-semibold mb-2">25. Agar siz xorijda yurganingizda muvaffaqiyatsizlikka
+							uchrasangiz,
 							nima qilasiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
@@ -1214,7 +1385,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">24. Agar sizga imkoniyat berilsa, 1 yil ichida xorijga chiqib
+						<label className="block font-semibold mb-2">26. Agar sizga imkoniyat berilsa, 1 yil ichida xorijga chiqib
 							ishlashga tayyormisiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
