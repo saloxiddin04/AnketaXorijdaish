@@ -296,7 +296,7 @@ const Main = () => {
 						(maktab va texnikum bitiruvchilari uchun)
 					</span>
 					<p className="text-xl px-2 py-4 bg-white border-t-4 border-t-blue-400 rounded text-justify">
-						&nbsp;&nbsp;&nbsp;Hurmatli, Bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va
+						&nbsp;&nbsp;&nbsp;Hurmatli bitiruvchi! Ushbu so‘rovnoma sizning hozirgi holatingiz, kasbiy rejalaringiz va
 						chet elda o‘qish yoki ishlashga tayyorgarligingiz haqida ma’lumot olish uchun mo‘ljallangan. Javoblaringiz
 						asosida sizga mos ta’lim va kasb-hunar loyihalarini yaratish rejalashtirilmoqda.
 						<br/>
@@ -390,8 +390,8 @@ const Main = () => {
 									type="radio"
 									name={"gender"}
 									value={"0"}
-									checked={formData["gender"] === 0}
-									onChange={() => handleChange("gender", 0)}
+									checked={formData["gender"] === 1}
+									onChange={() => handleChange("gender", 1)}
 								/>
 								<span>Erkak</span>
 							</label>
@@ -402,8 +402,8 @@ const Main = () => {
 									type="radio"
 									name={"gender"}
 									value={"1"}
-									checked={formData["gender"] === 1}
-									onChange={() => handleChange("gender", 1)}
+									checked={formData["gender"] === 0}
+									onChange={() => handleChange("gender", 0)}
 								/>
 								<span>Ayol</span>
 							</label>
@@ -1140,7 +1140,7 @@ const Main = () => {
 									checked={formData["preferred_country"] === 0}
 									onChange={() => handleChange("preferred_country", 0)}
 								/>
-								<span>Janubiy Koreya</span>
+								<span>Rossiya</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -1152,7 +1152,7 @@ const Main = () => {
 									checked={formData["preferred_country"] === 1}
 									onChange={() => handleChange("preferred_country", 1)}
 								/>
-								<span>Rossiya</span>
+								<span>Janubiy Koreya</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -1228,8 +1228,8 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">23. Xorijda qancha miqdorda oylik ish haqi ehtiyojlaringizni
-							qondiradi?</label>
+						<label className="block font-semibold mb-2">23. Xorijda qancha miqdorda oylik olishni hohlar
+							edingiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
 								<input
@@ -1291,7 +1291,7 @@ const Main = () => {
 									checked={formData["job_info_source"] === 1}
 									onChange={() => handleChange("job_info_source", 1)}
 								/>
-								<span>Internet qidiruv ilovalari orqali</span>
+								<span>Qidiruv saytlari orqali</span>
 							</label>
 						</div>
 						<div className="space-y-2">
