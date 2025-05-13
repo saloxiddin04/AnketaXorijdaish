@@ -485,7 +485,7 @@ const Main = () => {
 						</div>
 					</div>
 					
-					{formData["current_study_place"] === 1 || formData["current_study_place"] === 2 && (
+					{(formData["current_study_place"] === 1 || formData["current_study_place"] === 2) && (
 						<>
 							<div className="py-4 px-2 bg-white rounded">
 								<label className="block font-semibold mb-2">10. Texnikumni qaysi yo'nalishda tamomlayapsiz?</label>
