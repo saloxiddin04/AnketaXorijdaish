@@ -610,7 +610,7 @@ const Main = () => {
 					)}
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">12. Maktab/Texnikum/OTMni tamomlagach nima qilmoqchisiz?</label>
+						<label className="block font-semibold mb-2">13. Maktab/Texnikum/OTMni tamomlagach nima qilmoqchisiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
 								<input
@@ -698,7 +698,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">13. Agar o‘qishni rejalashtirayotgan bo‘lsangiz, qaysi sohada
+						<label className="block font-semibold mb-2">14. Agar o‘qishni rejalashtirayotgan bo‘lsangiz, qaysi sohada
 							o‘qimoqchisiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
@@ -787,7 +787,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">14. Agar kasb-hunar o‘rganmoqchi bo‘lsangiz qaysi kasbni tanlar
+						<label className="block font-semibold mb-2">15. Agar kasb-hunar o‘rganmoqchi bo‘lsangiz qaysi kasbni tanlar
 							edingiz?</label>
 						{options.professions && options.professions?.map((el) => (
 							<div key={el?.id} className="space-y-2">
@@ -833,12 +833,12 @@ const Main = () => {
 						{renderMultipleCheckboxGroup(
 							'known_languages',
 							[...options.languages, {id: 'Boshqa', name: 'Boshqa'}],
-							"15. Qaysi xorijiy tilni bilasiz? (bittadan ko’p javobni tanlashingiz mumkin)"
+							"16. Qaysi xorijiy tilni bilasiz? (bittadan ko’p javobni tanlashingiz mumkin)"
 						)}
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">16. Qaysi tilni o'rganmoqchisiz?</label>
+						<label className="block font-semibold mb-2">17. Qaysi tilni o'rganmoqchisiz?</label>
 						{options.languages && options.languages?.map((el) => (
 							<div key={el?.id} className="space-y-2">
 								<label className="flex items-center gap-2">
@@ -880,7 +880,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">17. Chet elda ishlash haqida o‘ylaganmisiz?</label>
+						<label className="block font-semibold mb-2">18. Chet elda ishlash haqida o‘ylaganmisiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
 								<input
@@ -932,7 +932,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">18. Agar ishlashni rejalashtirayotgan bo‘lsangiz, qaysi sohada
+						<label className="block font-semibold mb-2">19. Agar ishlashni rejalashtirayotgan bo‘lsangiz, qaysi sohada
 							ishlar edingiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
@@ -1042,7 +1042,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">19. Ota-onangiz sizning xorijga chiqishingizga qanday
+						<label className="block font-semibold mb-2">20. Ota-onangiz sizning xorijga chiqishingizga qanday
 							munosabatda?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
@@ -1086,12 +1086,12 @@ const Main = () => {
 						{renderMultipleCheckboxGroup(
 							'fears_abroad',
 							[...options.fears_abroad],
-							"20. Agar chet elda ishlasangiz, quyidagilardan eng ko‘p nimadan qo‘rqasiz? (Bir nechtasini belgilang)"
+							"21. Agar chet elda ishlasangiz, quyidagilardan eng ko‘p nimadan qo‘rqasiz? (Bir nechtasini belgilang)"
 						)}
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">21. Ota-onangiz yoki yaqinlaringiz xorijda ishlayaptimi?</label>
+						<label className="block font-semibold mb-2">22. Ota-onangiz yoki yaqinlaringiz xorijda ishlayaptimi?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
 								<input
@@ -1143,7 +1143,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">22. Agar ishlash uchun chet elga borsangiz, qaysi davlatni
+						<label className="block font-semibold mb-2">23. Agar ishlash uchun chet elga borsangiz, qaysi davlatni
 							tanlardingiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
@@ -1242,7 +1242,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">23. Xorijda qancha miqdorda oylik olishni hohlar
+						<label className="block font-semibold mb-2">24. Xorijda qancha miqdorda oylik olishni hohlar
 							edingiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
@@ -1283,7 +1283,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">24. Xorijda mavjud bo‘sh ish o‘rinlari haqidagi ma’lumotlarni
+						<label className="block font-semibold mb-2">25. Xorijda mavjud bo‘sh ish o‘rinlari haqidagi ma’lumotlarni
 							qayerdan olasiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
@@ -1358,7 +1358,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">25. Agar siz xorijda yurganingizda muvaffaqiyatsizlikka
+						<label className="block font-semibold mb-2">26. Agar siz xorijda yurganingizda muvaffaqiyatsizlikka
 							uchrasangiz,
 							nima qilasiz?</label>
 						<div className="space-y-2">
@@ -1400,7 +1400,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">26. Agar sizga imkoniyat berilsa, 1 yil ichida xorijga chiqib
+						<label className="block font-semibold mb-2">27. Agar sizga imkoniyat berilsa, 1 yil ichida xorijga chiqib
 							ishlashga tayyormisiz?</label>
 						<div className="space-y-2">
 							<label className="flex items-center gap-2">
