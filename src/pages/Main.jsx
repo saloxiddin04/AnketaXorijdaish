@@ -3,7 +3,7 @@ import axios from 'axios';
 import {useTranslation} from 'react-i18next';
 import {toast} from "react-toastify";
 
-export const api_url = "http://api-xorijdaish.asilbro.uz"
+export const api_url = "https://cabinet-test.xorijdaish.uz"
 
 const Main = () => {
 	const {t} = useTranslation();
