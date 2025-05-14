@@ -306,7 +306,7 @@ const Main = () => {
 						&nbsp;&nbsp;&nbsp;So‘rovnoma shaxsiy ma’lumotlar xavfsizligini ta’minlagan holda o‘tkaziladi.
 						<br/>
 						<br/>
-						&nbsp;&nbsp;&nbsp;Iltimos, barcha savollarga to‘liq va samimiy javob bering. Katta Rahmat!
+						&nbsp;&nbsp;&nbsp;Iltimos, barcha savollarga to‘liq va samimiy javob bering. Katta rahmat!
 					</p>
 					
 					<div className="py-4 px-2 bg-white rounded">
