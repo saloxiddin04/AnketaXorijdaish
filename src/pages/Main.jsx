@@ -176,10 +176,9 @@ const Main = () => {
 		expected_salary: formData.expected_salary,
 		job_info_source: formData.job_info_source === 6 ? undefined : formData.job_info_source,
 		custom_job_info_source: formData.job_info_source === 6 ? formData.custom_job_info_source : undefined,
-		educational_institution: formData.educational_institution
+		educational_institution: formData.educational_institution,
+		language_level: formData.language_level
 	};
-	
-	
 	
 	const validateForm = () => {
 		const requiredFields = [
@@ -260,11 +259,16 @@ const Main = () => {
 			return false;
 		}
 		
+		if (!formData.language_level) {
+			toast.error("Til bilish darajangizni tanlang.")
+			return false;
+		}
+		
 		if (
 			formData.known_languages?.includes("Boshqa") &&
 			!formData.custom_known_languages
 		) {
-			alert("Iltimos, biladigan tilni aniqlashtiring.");
+			toast.error("Iltimos, biladigan tilni aniqlashtiring.");
 			return false;
 		}
 		
@@ -830,11 +834,73 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						{renderMultipleCheckboxGroup(
-							'known_languages',
-							[...options.languages, {id: 'Boshqa', name: 'Boshqa'}],
-							"16. Qaysi xorijiy tilni bilasiz? (bittadan ko’p javobni tanlashingiz mumkin)"
+						<label className="block font-semibold mb-2">16. Qaysi xorijiy tilni bilasiz? (bittadan ko’p javobni tanlashingiz mumkin)</label>
+						{options.languages && options.languages?.map((el) => (
+							<div key={el?.id} className="space-y-2">
+								<label className="flex items-center gap-2">
+									<input
+										type="radio"
+										name={"known_languages"}
+										value={el?.id}
+										checked={formData["known_languages"] === el?.id}
+										onChange={() => handleChange("known_languages", el?.id)}
+									/>
+									<span>{el?.name}</span>
+								</label>
+							</div>
+						))}
+						
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"known_languages"}
+									value={'Boshqa'}
+									checked={formData["known_languages"] === 'Boshqa'}
+									onChange={() => handleChange("known_languages", 'Boshqa')}
+								/>
+								<span>Boshqa</span>
+							</label>
+						</div>
+						{formData["known_languages"] === 'Boshqa' && (
+							<div className="space-y-2">
+								<input
+									required
+									type="text"
+									placeholder="Sohani kiriting"
+									className="w-full p-2 border border-gray-300 rounded"
+									value={formData['custom_known_languages'] || ''}
+									onChange={(e) => handleChange("custom_known_languages", e.target.value)}
+								/>
+							</div>
 						)}
+						{formData["known_languages"] && (
+							<>
+								<label className="block font-semibold my-2" htmlFor="language_level">Til bilish darajangizni tanlang</label>
+								<select
+									name={"language_level"}
+									className="border border-gray-300 rounded px-3 py-2 w-full"
+									value={formData["language_level"] || ''}
+									onChange={(e) => {
+										handleChange("language_level", e.target.value)
+									}}
+								>
+									<option value="" disabled={formData["language_level"]}>{t('Tanlang')}</option>
+									<option value="A1">A1</option>
+									<option value="A2">A2</option>
+									<option value="B1">B1</option>
+									<option value="B2">B2</option>
+									<option value="C1">C1</option>
+									<option value="C2">C2</option>
+								</select>
+							</>
+						)}
+						
+						{/*{renderMultipleCheckboxGroup(*/}
+						{/*	'known_languages',*/}
+						{/*	[...options.languages, {id: 'Boshqa', name: 'Boshqa'}],*/}
+						{/*	"16. Qaysi xorijiy tilni bilasiz? (bittadan ko’p javobni tanlashingiz mumkin)"*/}
+						{/*)}*/}
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
