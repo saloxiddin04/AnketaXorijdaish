@@ -149,7 +149,7 @@ const Main = () => {
 		custom_optional_profession: formData.optional_profession === 5 ? formData.custom_optional_profession : undefined,
 		
 		known_languages: Array.isArray(formData.known_languages) &&
-		formData.known_languages.includes('Boshqa') ? undefined : formData.known_languages,
+		formData.known_languages.includes('Boshqa') ? undefined : [formData.known_languages],
 		custom_known_languages: Array.isArray(formData.known_languages) &&
 		formData.known_languages.includes('Boshqa') ? formData.custom_known_languages : undefined,
 		
