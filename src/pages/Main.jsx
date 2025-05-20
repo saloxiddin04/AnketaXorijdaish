@@ -837,7 +837,7 @@ const Main = () => {
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
-						<label className="block font-semibold mb-2">16. Qaysi xorijiy tilni bilasiz? (bittadan ko’p javobni tanlashingiz mumkin)</label>
+						<label className="block font-semibold mb-2">16. Qaysi xorijiy tilni bilasiz?</label>
 						{options.languages && options.languages?.map((el) => (
 							<div key={el?.id} className="space-y-2">
 								<label className="flex items-center gap-2">
