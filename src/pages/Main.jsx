@@ -120,6 +120,9 @@ const Main = () => {
 		);
 	};
 	
+	const hechBiriniObj = options?.languages?.find(lang => lang?.name === 'Hech birini');
+	const HECH_BIRINI_ID = hechBiriniObj?.id;
+	
 	const data = {
 		last_name: formData.last_name,
 		first_name: formData.first_name,
@@ -177,7 +180,7 @@ const Main = () => {
 		job_info_source: formData.job_info_source === 6 ? undefined : formData.job_info_source,
 		custom_job_info_source: formData.job_info_source === 6 ? formData.custom_job_info_source : undefined,
 		educational_institution: formData.educational_institution,
-		language_level: formData.language_level
+		language_level: formData.language_level !== HECH_BIRINI_ID ? formData.language_level : undefined
 	};
 	
 	const validateForm = () => {
@@ -259,8 +262,8 @@ const Main = () => {
 			return false;
 		}
 		
-		if (!formData.language_level) {
-			toast.error("Til bilish darajangizni tanlang.")
+		if (formData["known_languages"] !== HECH_BIRINI_ID && !formData.language_level) {
+			toast.error("Til bilish darajangizni tanlang.");
 			return false;
 		}
 		
@@ -867,14 +870,14 @@ const Main = () => {
 								<input
 									required
 									type="text"
-									placeholder="Sohani kiriting"
+									placeholder="Xorijiy tilni kiriting"
 									className="w-full p-2 border border-gray-300 rounded"
 									value={formData['custom_known_languages'] || ''}
 									onChange={(e) => handleChange("custom_known_languages", e.target.value)}
 								/>
 							</div>
 						)}
-						{formData["known_languages"] && (
+						{formData["known_languages"] && formData["known_languages"] !== HECH_BIRINI_ID && (
 							<>
 								<label className="block font-semibold my-2" htmlFor="language_level">Til bilish darajangizni tanlang</label>
 								<select
