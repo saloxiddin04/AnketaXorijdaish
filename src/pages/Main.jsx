@@ -971,7 +971,7 @@ const Main = () => {
 									checked={formData["abroad_work_interest"] === 1}
 									onChange={() => handleChange("abroad_work_interest", 1)}
 								/>
-								<span>Ha, lekin ishonchim yo‘q</span>
+								<span>Ha, lekin yetarli maʼlumotga ega emasman</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -983,7 +983,7 @@ const Main = () => {
 									checked={formData["abroad_work_interest"] === 2}
 									onChange={() => handleChange("abroad_work_interest", 2)}
 								/>
-								<span>Ha, ishonchli korxona bo‘lsa ishlardim</span>
+								<span>Ha, lekin faqat ishonchli va rasmiy ish taklif qilinsa</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -1060,7 +1060,7 @@ const Main = () => {
 									checked={formData["planned_job"] === 4}
 									onChange={() => handleChange("planned_job", 4)}
 								/>
-								<span>Dasturchi/IT</span>
+								<span>Dasturchi/axborot texnologiyalari sohasi</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -1149,6 +1149,18 @@ const Main = () => {
 								<span>Qarshi</span>
 							</label>
 						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"parent_support_abroad"}
+									value={"3"}
+									checked={formData["parent_support_abroad"] === 3}
+									onChange={() => handleChange("parent_support_abroad", 3)}
+								/>
+								<span>Oʻz fikrini bildirishmagan</span>
+							</label>
+						</div>
 					</div>
 					
 					<div className="py-4 px-2 bg-white rounded">
@@ -1170,7 +1182,19 @@ const Main = () => {
 									checked={formData["family_abroad_status"] === 0}
 									onChange={() => handleChange("family_abroad_status", 0)}
 								/>
-								<span>Ha, biri</span>
+								<span>Ha, otam</span>
+							</label>
+						</div>
+						<div className="space-y-2">
+							<label className="flex items-center gap-2">
+								<input
+									type="radio"
+									name={"family_abroad_status"}
+									value={"0"}
+									checked={formData["family_abroad_status"] === 0}
+									onChange={() => handleChange("family_abroad_status", 0)}
+								/>
+								<span>Ha, onam</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -1206,7 +1230,7 @@ const Main = () => {
 									checked={formData["family_abroad_status"] === 3}
 									onChange={() => handleChange("family_abroad_status", 3)}
 								/>
-								<span>Oldin ishlagan, hozir yo'q</span>
+								<span>Avval ishlagan, hozir yo'q</span>
 							</label>
 						</div>
 					</div>
@@ -1439,7 +1463,7 @@ const Main = () => {
 									checked={formData["failure_response"] === 0}
 									onChange={() => handleChange("failure_response", 0)}
 								/>
-								<span>Ortga qaytaman</span>
+								<span>Vatanga qaytaman</span>
 							</label>
 						</div>
 						<div className="space-y-2">
@@ -1480,7 +1504,7 @@ const Main = () => {
 									checked={formData["abroad_opportunity"] === 0}
 									onChange={() => handleChange("abroad_opportunity", 0)}
 								/>
-								<span>Ha, 100%</span>
+								<span>Ha, to'liq tayyorman</span>
 							</label>
 						</div>
 						<div className="space-y-2">
