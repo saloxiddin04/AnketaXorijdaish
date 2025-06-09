@@ -1190,9 +1190,9 @@ const Main = () => {
 								<input
 									type="radio"
 									name={"family_abroad_status"}
-									value={"0"}
-									checked={formData["family_abroad_status"] === 0}
-									onChange={() => handleChange("family_abroad_status", 0)}
+									value={"4"}
+									checked={formData["family_abroad_status"] === 4}
+									onChange={() => handleChange("family_abroad_status", 4)}
 								/>
 								<span>Ha, onam</span>
 							</label>
