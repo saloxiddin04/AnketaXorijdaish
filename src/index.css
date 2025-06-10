@@ -7,3 +7,20 @@
 .btn {
 	@apply bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600;
 }
+
+@keyframes draw-check {
+	0% {
+		stroke-dasharray: 0 100;
+		stroke-dashoffset: 0;
+	}
+	100% {
+		stroke-dasharray: 100 0;
+		stroke-dashoffset: 0;
+	}
+}
+
+.animate-draw-check .path {
+	stroke-dasharray: 100;
+	stroke-dashoffset: 100;
+	animation: draw-check 2s ease-out forwards;
+}

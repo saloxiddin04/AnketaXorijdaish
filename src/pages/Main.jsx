@@ -2,12 +2,13 @@ import {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useTranslation} from 'react-i18next';
 import {toast} from "react-toastify";
+import SuccessModal from "../components/SuccessModal.jsx";
 
 export const api_url = "https://cabinet-test.xorijdaish.uz"
 
 const Main = () => {
 	const {t} = useTranslation();
-	
+	const [modalOpen, setModalOpen] = useState(false);
 	const [formData, setFormData] = useState({});
 	const [regions, setRegions] = useState([]);
 	const [districts, setDistricts] = useState([]);
@@ -284,11 +285,10 @@ const Main = () => {
 		try {
 			const response = await axios.post(`${api_url}/questionnaire/graduate-survey`, data)
 			if (response.status === 201) {
+				setModalOpen(true)
 				toast.success("Muvufaqqiyatli yuborildi!")
 				setFormData({})
 			}
-			console.log("response", response)
-			console.log("formData", formData)
 		} catch (e) {
 			return e;
 		}
@@ -1553,6 +1553,8 @@ const Main = () => {
 					</button>
 				</form>
 			</div>
+			
+			<SuccessModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
 		</main>
 	);
 };
